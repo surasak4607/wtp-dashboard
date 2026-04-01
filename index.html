@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Water Treatment Dashboard — หาดทิพย์ พุนพิน</title>
+<title>Water Treatment Dashboard — หาดทิพย์ พุนพิน v4</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -11,48 +11,51 @@
   --white:#fff; --bg:#f7f8fa; --card:#fff; --border:#e4e8ef; --border-light:#f0f2f6;
   --text-primary:#0f1923; --text-secondary:#5a6475; --text-muted:#8e98a8;
   --blue:#1a6ef5; --teal:#00b4a0; --violet:#7c4dff; --amber:#f59e0b;
-  --rose:#f43f5e; --green:#10b981; --orange:#f97316;
+  --rose:#f43f5e; --green:#10b981; --orange:#f97316; --cyan:#06b6d4;
   --ok:#10b981; --warn:#f59e0b; --danger:#f43f5e;
   --shadow-sm:0 1px 3px rgba(0,0,0,.06); --shadow-md:0 4px 16px rgba(0,0,0,.08);
   --r:14px; --r-sm:8px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;font-size:14px}
-
-/* ── HEADER ── */
 .header{background:#fff;border-bottom:1.5px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:62px;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm)}
 .hlogo{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px}
 .htitle h1{font-size:15px;font-weight:700} .htitle p{font-size:11px;color:var(--text-muted)}
 .hbadge{background:#eef4ff;color:var(--blue);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #c7d9ff;font-family:'IBM Plex Mono',monospace}
-.membrane-badge{background:#fff7ed;color:#c2410c;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid #fed7aa;display:flex;align-items:center;gap:5px}
 
-/* ── LAYOUT ── */
+/* MONTH SELECTOR */
+.month-bar{background:#fff;border-bottom:1.5px solid var(--border);padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.month-bar-label{font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap}
+.month-select,.year-select{border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;color:var(--text-primary);background:#fff;outline:none;cursor:pointer}
+.month-select:focus,.year-select:focus{border-color:var(--blue)}
+.add-month-btn{padding:5px 14px;border:1.5px solid var(--blue);border-radius:8px;background:var(--blue);color:#fff;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.add-month-btn:hover{background:#1259d4}
+.del-month-btn{padding:5px 14px;border:1.5px solid var(--rose);border-radius:8px;background:#fff;color:var(--rose);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.del-month-btn:hover{background:var(--rose);color:#fff}
+.record-count{font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;margin-left:auto}
+
 .main{padding:20px 28px;max-width:1600px;margin:0 auto}
-
-/* ── TABS ── */
 .tab-nav{display:flex;gap:3px;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:5px;margin-bottom:20px;box-shadow:var(--shadow-sm);overflow-x:auto}
 .tab-btn{flex:1;min-width:100px;padding:8px 14px;border:none;background:transparent;border-radius:calc(var(--r) - 4px);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .15s;white-space:nowrap}
 .tab-btn:hover{background:var(--bg);color:var(--text-primary)}
 .tab-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(26,110,245,.3)}
 .tab-panel{display:none} .tab-panel.active{display:block}
 
-/* ── KPI GRID ── */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px}
-.kpi-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;transition:box-shadow .15s;cursor:default}
-.kpi-card:hover{box-shadow:var(--shadow-md)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.kpi-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;cursor:default}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
 .kpi-card.blue::before{background:var(--blue)} .kpi-card.teal::before{background:var(--teal)}
 .kpi-card.violet::before{background:var(--violet)} .kpi-card.amber::before{background:var(--amber)}
 .kpi-card.rose::before{background:var(--rose)} .kpi-card.green::before{background:var(--green)}
+.kpi-card.cyan::before{background:var(--cyan)} .kpi-card.orange::before{background:var(--orange)}
 .kpi-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px}
-.kpi-value{font-size:26px;font-weight:700;line-height:1;font-family:'IBM Plex Mono',monospace}
+.kpi-value{font-size:24px;font-weight:700;line-height:1;font-family:'IBM Plex Mono',monospace}
 .kpi-unit{font-size:11px;font-weight:400;color:var(--text-muted);margin-left:3px}
 .kpi-sub{margin-top:7px;font-size:11px;color:var(--text-secondary)}
 .sbadge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px}
 .sbadge.ok{background:#ecfdf5;color:var(--ok)} .sbadge.warn{background:#fffbeb;color:var(--warn)} .sbadge.danger{background:#fff1f2;color:var(--danger)}
 .sdot{width:5px;height:5px;border-radius:50%;background:currentColor}
 
-/* ── CHART GRID ── */
 .chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:20px}
 @media(max-width:1100px){.chart-grid{grid-template-columns:1fr}}
 .chart-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow-sm)}
@@ -63,81 +66,64 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text-prim
 .tb{background:#eef4ff;color:var(--blue)} .tt{background:#e6faf8;color:var(--teal)}
 .tv{background:#f3eeff;color:var(--violet)} .ta{background:#fffbeb;color:#b45309}
 .tr{background:#fff1f2;color:var(--rose)} .tg{background:#ecfdf5;color:var(--ok)}
+.tc{background:#e0f7fa;color:#0891b2} .to{background:#fff7ed;color:#c2410c}
 .chart-wrap{position:relative;height:230px}
 
-/* ── SECTION LABEL ── */
 .slabel{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .slabel::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ── TABLE ── */
 .table-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:20px}
-.table-hdr{padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.table-hdr{padding:14px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .table-hdr h3{font-size:13px;font-weight:700}
 .tscroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-thead th{background:var(--bg);padding:9px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid var(--border);white-space:nowrap}
+thead th{background:var(--bg);padding:9px 10px;text-align:left;font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid var(--border);white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--border-light);transition:background .1s}
 tbody tr:hover{background:#f9fbff}
-tbody td{padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap}
+tbody td{padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap}
 td.datecol{font-family:'Sarabun',sans-serif;font-weight:600;font-size:12px}
-td input[type="number"],td input[type="text"]{width:76px;border:1.5px solid var(--border);border-radius:6px;padding:3px 6px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-primary);background:#fff;outline:none;transition:border-color .15s}
-td input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,110,245,.1)}
-td input[type="text"]{width:92px}
-.ebtn{padding:3px 10px;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+td input[type="number"]{width:72px;border:1.5px solid var(--border);border-radius:5px;padding:3px 5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-primary);background:#fff;outline:none}
+td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)}
+.ebtn{padding:3px 8px;border:1.5px solid var(--border);border-radius:5px;background:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-secondary)}
 .ebtn:hover{border-color:var(--blue);color:var(--blue)}
-.sbtn{padding:3px 10px;border:1.5px solid var(--blue);border-radius:6px;background:var(--blue);font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:#fff}
-.dbtn{padding:3px 10px;border:1.5px solid var(--rose);border-radius:6px;background:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--rose)}
+.sbtn{padding:3px 8px;border:1.5px solid var(--blue);border-radius:5px;background:var(--blue);font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:#fff}
+.dbtn{padding:3px 8px;border:1.5px solid var(--rose);border-radius:5px;background:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--rose)}
 .dbtn:hover{background:var(--rose);color:#fff}
 
-/* ── MEMBRANE EVENT LINE ── */
 .membrane-info{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:var(--r-sm);padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:12px}
 .mi-icon{font-size:18px}
 .mi-text strong{color:#c2410c}
 
-/* ── DAILY VIEW PANEL ── */
 .day-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
-.day-select-label{font-size:13px;font-weight:600;color:var(--text-secondary);white-space:nowrap}
-.day-btn{padding:6px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--text-secondary);transition:all .15s;white-space:nowrap}
+.day-btn{padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--text-secondary);transition:all .15s;white-space:nowrap}
 .day-btn:hover{border-color:var(--blue);color:var(--blue)}
 .day-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(26,110,245,.25)}
 .day-btn.membrane-day{border-color:var(--orange)!important;color:var(--orange)!important}
 .day-btn.membrane-day.active{background:var(--orange)!important;color:#fff!important}
-.day-btn.range-start{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important;box-shadow:0 2px 8px rgba(16,185,129,.35)!important}
-.day-btn.range-end{background:var(--blue)!important;color:#fff!important;border-color:var(--blue)!important;box-shadow:0 2px 8px rgba(26,110,245,.3)!important}
-.day-btn.range-in{background:#dbeafe!important;color:var(--blue)!important;border-color:#93c5fd!important}
-.range-mode-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 16px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:var(--r-sm);font-size:12px}
-.range-mode-toggle{display:flex;gap:4px;background:#e0e7ef;border-radius:20px;padding:3px}
-.rtbtn{padding:4px 14px;border:none;border-radius:16px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-secondary);background:transparent;transition:all .15s}
-.rtbtn.active{background:#fff;color:var(--blue);box-shadow:0 1px 4px rgba(0,0,0,.12)}
-.range-hint{color:var(--text-muted);font-size:11px}
-.range-label{font-weight:700;color:var(--text-primary)}
-.clear-range-btn{padding:3px 12px;border:1.5px solid var(--border);border-radius:12px;background:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-secondary);margin-left:auto}
-.clear-range-btn:hover{border-color:var(--rose);color:var(--rose)}
-.day-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}
-.day-metric{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:14px 16px}
-.dm-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
-.dm-val{font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;line-height:1}
-.dm-unit{font-size:11px;color:var(--text-muted)}
-.dm-std{font-size:10px;color:var(--text-muted);margin-top:4px}
-.day-charts{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:1100px){.day-charts{grid-template-columns:1fr}}
-.day-chart-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:16px 18px}
-.day-chart-card .chart-wrap{height:200px}
 
-/* ── ADD DATA FORM ── */
 .add-form{background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:20px}
-.form-title{font-size:14px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
-.form-group{display:flex;flex-direction:column;gap:5px}
+.form-title{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:4px}
 .form-label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-.form-input{border:1.5px solid var(--border);border-radius:6px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-primary);background:#fff;outline:none;transition:border-color .15s}
+.form-section{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;margin-top:6px;padding-bottom:5px;border-bottom:1px solid var(--border-light)}
+.form-input{border:1.5px solid var(--border);border-radius:6px;padding:6px 10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-primary);background:#fff;outline:none;transition:border-color .15s}
 .form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,110,245,.1)}
-.form-section{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;margin-top:4px;padding-bottom:6px;border-bottom:1px solid var(--border-light)}
-.add-btn{padding:9px 24px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.add-btn{padding:9px 24px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
 .add-btn:hover{background:#1259d4}
 .cancel-btn{padding:9px 24px;background:#fff;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
 .success-toast{position:fixed;bottom:28px;right:28px;background:#0f1923;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(80px);opacity:0;transition:all .3s ease;pointer-events:none}
 .success-toast.show{transform:translateY(0);opacity:1}
+.day-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.day-metric{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:12px 14px}
+.dm-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.dm-val{font-size:20px;font-weight:700;font-family:'IBM Plex Mono',monospace;line-height:1}
+.dm-unit{font-size:11px;color:var(--text-muted)}
+.dm-std{font-size:10px;color:var(--text-muted);margin-top:4px}
+.no-data{padding:60px;text-align:center;color:var(--text-muted);font-size:14px}
+
+/* UF section highlight */
+.uf-section-hdr{background:linear-gradient(90deg,#e0f7fa,#f0fffe);border:1.5px solid #b2ebf2;border-radius:var(--r-sm);padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:#0891b2}
 
 ::-webkit-scrollbar{width:5px;height:5px} ::-webkit-scrollbar-thumb{background:#d1d8e4;border-radius:10px}
 </style>
@@ -151,39 +137,50 @@ td input[type="text"]{width:92px}
       <h1>Water Treatment Dashboard</h1>
       <p>บมจ.หาดทิพย์ — โรงงานพุนพิน</p>
     </div>
-    <div class="hbadge">มีนาคม 2569</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-    <div class="membrane-badge">🔧 เปลี่ยน Membrane RO#1&3 — 18/3/69</div>
     <span style="font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace" id="lastUpdate"></span>
   </div>
 </header>
+
+<!-- MONTH / YEAR SELECTOR BAR -->
+<div class="month-bar">
+  <span class="month-bar-label">📅 เดือน/ปี:</span>
+  <select class="year-select" id="sel-year" onchange="onPeriodChange()"></select>
+  <select class="month-select" id="sel-month" onchange="onPeriodChange()">
+    <option value="1">มกราคม</option><option value="2">กุมภาพันธ์</option>
+    <option value="3">มีนาคม</option><option value="4">เมษายน</option>
+    <option value="5">พฤษภาคม</option><option value="6">มิถุนายน</option>
+    <option value="7">กรกฎาคม</option><option value="8">สิงหาคม</option>
+    <option value="9">กันยายน</option><option value="10">ตุลาคม</option>
+    <option value="11">พฤศจิกายน</option><option value="12">ธันวาคม</option>
+  </select>
+  <button class="add-month-btn" onclick="addNewMonth()">➕ เพิ่มเดือน</button>
+  <button class="del-month-btn" onclick="deleteCurrentMonth()">🗑 ลบเดือนนี้</button>
+  <span class="record-count" id="record-count"></span>
+</div>
 
 <main class="main">
 
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('overview',this)">📊 ภาพรวม</button>
-  <button class="tab-btn" onclick="switchTab('daily',this)">📅 รายวัน</button>
+  <button class="tab-btn" onclick="switchTab('uf',this)">🔵 UF ชุด 1, 2, 3</button>
   <button class="tab-btn" onclick="switchTab('saltrej',this)">🧪 Salt Rejection</button>
   <button class="tab-btn" onclick="switchTab('conduct',this)">⚡ Conductivity</button>
   <button class="tab-btn" onclick="switchTab('flow',this)">💧 Flow Rate</button>
-  <button class="tab-btn" onclick="switchTab('pressure',this)">🔵 Pressure</button>
+  <button class="tab-btn" onclick="switchTab('daily',this)">📅 รายวัน</button>
   <button class="tab-btn" onclick="switchTab('edit',this)">✏️ แก้ไข / เพิ่มข้อมูล</button>
 </div>
 
 <!-- ════ OVERVIEW ════ -->
 <div id="tab-overview" class="tab-panel active">
-  <div class="membrane-info">
-    <span class="mi-icon">🔧</span>
-    <span class="mi-text">เส้นประสีส้ม = <strong>วันที่ 18/3/69 เปลี่ยนชุดแมมเบรน RO#1 และ RO#3</strong> — สังเกตค่า %SR และ Conductivity ที่ดีขึ้นหลังเปลี่ยน</span>
-  </div>
-  <div class="section-label slabel">สรุปค่าล่าสุด</div>
+  <div class="slabel">สรุปค่าล่าสุด (วันที่บันทึกล่าสุดของเดือนนี้)</div>
   <div class="kpi-grid" id="kpi-overview"></div>
   <div class="chart-grid">
     <div class="chart-card">
       <div class="chart-header">
         <div><div class="chart-title">% Salt Rejection — RO ทั้งหมด</div>
-        <div class="chart-subtitle">STD ≥ 95% | เส้นประส้ม = เปลี่ยน Membrane 18/3/69</div></div>
+        <div class="chart-subtitle">STD ≥ 95%</div></div>
         <div class="chart-tags"><span class="ctag tb">RO#1</span><span class="ctag tt">RO#2</span><span class="ctag tv">RO#3</span></div>
       </div>
       <div class="chart-wrap"><canvas id="co-sr"></canvas></div>
@@ -200,58 +197,126 @@ td input[type="text"]{width:92px}
   <div class="chart-grid">
     <div class="chart-card">
       <div class="chart-header">
-        <div><div class="chart-title">Feed Conductivity — RO ทั้งหมด</div>
-        <div class="chart-subtitle">μS/cm — ค่าน้ำเข้าก่อนกรอง</div></div>
+        <div><div class="chart-title">UF Flow Rate — UF#1, UF#2, UF#3</div>
+        <div class="chart-subtitle">m³/hr | STD ≤ 70</div></div>
+        <div class="chart-tags"><span class="ctag tc">UF#1</span><span class="ctag to">UF#2</span><span class="ctag ta">UF#3</span></div>
       </div>
-      <div class="chart-wrap"><canvas id="co-fcond"></canvas></div>
+      <div class="chart-wrap"><canvas id="co-ufflow"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="chart-header">
-        <div><div class="chart-title">UF#3 Product Flow</div>
-        <div class="chart-subtitle">m³/hr | STD ≤ 70</div></div>
-        <span class="ctag ta">UF#3</span>
+        <div><div class="chart-title">RO Product Flow Rate</div>
+        <div class="chart-subtitle">m³/hr | STD 35–40</div></div>
+        <div class="chart-tags"><span class="ctag tb">RO#1</span><span class="ctag tt">RO#2</span></div>
       </div>
-      <div class="chart-wrap"><canvas id="co-ufflow"></canvas></div>
+      <div class="chart-wrap"><canvas id="co-roflow"></canvas></div>
     </div>
   </div>
 </div>
 
-<!-- ════ DAILY VIEW ════ -->
-<div id="tab-daily" class="tab-panel">
-  <div class="slabel">เลือกวันที่ต้องการดูข้อมูล</div>
+<!-- ════ UF TAB ════ -->
+<div id="tab-uf" class="tab-panel">
+  <div class="uf-section-hdr">🔵 ข้อมูล UF (Ultrafiltration) — ชุด 1, 2, 3 &nbsp;|&nbsp; %Salt Reject · Conductivity · Flow Rate</div>
+  <div class="kpi-grid" id="kpi-uf"></div>
 
-  <!-- Range Mode Bar -->
-  <div class="range-mode-bar">
-    <span style="font-weight:600;font-size:12px;white-space:nowrap">โหมด:</span>
-    <div class="range-mode-toggle">
-      <button class="rtbtn active" id="rtbtn-single" onclick="setRangeMode('single')">📅 วันเดียว</button>
-      <button class="rtbtn" id="rtbtn-range" onclick="setRangeMode('range')">📆 ช่วงวัน</button>
+  <!-- UF#1 -->
+  <div class="slabel">UF ชุด 1</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#1 — % Salt Rejection</div><div class="chart-subtitle">STD ≥ 95%</div></div><span class="ctag tc">UF#1</span></div>
+      <div class="chart-wrap"><canvas id="uf1-sr"></canvas></div>
     </div>
-    <span class="range-hint" id="range-hint">กดปุ่มวันเดียว เพื่อดูข้อมูลวันนั้น</span>
-    <button class="clear-range-btn" id="clear-range-btn" style="display:none" onclick="clearRange()">✕ ล้างช่วง</button>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#1 — Conductivity (Feed & Product)</div><div class="chart-subtitle">μS/cm | Prod STD &lt; 85</div></div><span class="ctag tc">UF#1</span></div>
+      <div class="chart-wrap"><canvas id="uf1-cond"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#1 — Product Flow Rate</div><div class="chart-subtitle">m³/hr | STD ≤ 70</div></div><span class="ctag tc">UF#1</span></div>
+      <div class="chart-wrap"><canvas id="uf1-flow"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#1 — ตาราง %SR / Cond / Flow รายวัน</div></div></div>
+      <div style="max-height:240px;overflow-y:auto">
+        <table><thead><tr><th>วันที่</th><th>Feed Cond</th><th>Prod Cond</th><th>%SR</th><th>Flow (m³/hr)</th></tr></thead>
+        <tbody id="uf1-tbody"></tbody></table>
+      </div>
+    </div>
   </div>
 
-  <div class="day-selector">
-    <span class="day-select-label">📅 วันที่:</span>
-    <div id="day-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  <!-- UF#2 -->
+  <div class="slabel">UF ชุด 2</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#2 — % Salt Rejection</div><div class="chart-subtitle">STD ≥ 95%</div></div><span class="ctag to">UF#2</span></div>
+      <div class="chart-wrap"><canvas id="uf2-sr"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#2 — Conductivity (Feed & Product)</div><div class="chart-subtitle">μS/cm | Prod STD &lt; 85</div></div><span class="ctag to">UF#2</span></div>
+      <div class="chart-wrap"><canvas id="uf2-cond"></canvas></div>
+    </div>
   </div>
-  <div id="day-membrane-note" style="display:none" class="membrane-info">
-    <span class="mi-icon">🔧</span>
-    <span class="mi-text"><strong>วันนี้มีการเปลี่ยนชุดแมมเบรน RO#1 และ RO#3</strong> — ข้อมูลวันนี้คือค่าหลังเปลี่ยนแมมเบรนใหม่</span>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#2 — Product Flow Rate</div><div class="chart-subtitle">m³/hr | STD ≤ 70</div></div><span class="ctag to">UF#2</span></div>
+      <div class="chart-wrap"><canvas id="uf2-flow"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#2 — ตาราง %SR / Cond / Flow รายวัน</div></div></div>
+      <div style="max-height:240px;overflow-y:auto">
+        <table><thead><tr><th>วันที่</th><th>Feed Cond</th><th>Prod Cond</th><th>%SR</th><th>Flow (m³/hr)</th></tr></thead>
+        <tbody id="uf2-tbody"></tbody></table>
+      </div>
+    </div>
   </div>
-  <div id="daily-content"></div>
+
+  <!-- UF#3 -->
+  <div class="slabel">UF ชุด 3</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#3 — % Salt Rejection</div><div class="chart-subtitle">STD ≥ 95%</div></div><span class="ctag ta">UF#3</span></div>
+      <div class="chart-wrap"><canvas id="uf3-sr"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#3 — Conductivity (Feed & Product)</div><div class="chart-subtitle">μS/cm | Prod STD &lt; 85</div></div><span class="ctag ta">UF#3</span></div>
+      <div class="chart-wrap"><canvas id="uf3-cond"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#3 — Product Flow Rate</div><div class="chart-subtitle">m³/hr | STD ≤ 70</div></div><span class="ctag ta">UF#3</span></div>
+      <div class="chart-wrap"><canvas id="uf3-flow"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">UF#3 — ตาราง %SR / Cond / Flow รายวัน</div></div></div>
+      <div style="max-height:240px;overflow-y:auto">
+        <table><thead><tr><th>วันที่</th><th>Feed Cond</th><th>Prod Cond</th><th>%SR</th><th>Flow (m³/hr)</th></tr></thead>
+        <tbody id="uf3-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- UF Compare -->
+  <div class="slabel">เปรียบเทียบ UF ทั้ง 3 ชุด</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">% Salt Rejection — UF#1, 2, 3 เปรียบเทียบ</div></div></div>
+      <div class="chart-wrap"><canvas id="uf-sr-compare"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header"><div><div class="chart-title">Flow Rate — UF#1, 2, 3 เปรียบเทียบ</div></div></div>
+      <div class="chart-wrap"><canvas id="uf-flow-compare"></canvas></div>
+    </div>
+  </div>
 </div>
 
 <!-- ════ SALT REJECTION ════ -->
 <div id="tab-saltrej" class="tab-panel">
-  <div class="membrane-info">
-    <span class="mi-icon">🔧</span>
-    <span class="mi-text">เส้นประสีส้ม = <strong>เปลี่ยน Membrane RO#1 & RO#3 วันที่ 18/3/69</strong></span>
-  </div>
   <div class="kpi-grid" id="kpi-sr"></div>
   <div class="chart-grid">
     <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">Salt Rejection — RO#1</div><div class="chart-subtitle">% SR = (1 − Prod/Feed Cond) × 100 | STD ≥ 95%</div></div><span class="ctag tb">STD ≥ 95%</span></div>
+      <div class="chart-header"><div><div class="chart-title">Salt Rejection — RO#1</div><div class="chart-subtitle">% SR = (1 − Prod/Feed) × 100 | STD ≥ 95%</div></div><span class="ctag tb">STD ≥ 95%</span></div>
       <div class="chart-wrap"><canvas id="sr-ro1"></canvas></div>
     </div>
     <div class="chart-card">
@@ -265,12 +330,12 @@ td input[type="text"]{width:92px}
       <div class="chart-wrap"><canvas id="sr-ro3"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">Salt Rejection เปรียบเทียบ RO#1, 2, 3</div><div class="chart-subtitle">เส้นแดง = STD 95%</div></div></div>
+      <div class="chart-header"><div><div class="chart-title">Salt Rejection เปรียบเทียบ RO#1, 2, 3</div></div></div>
       <div class="chart-wrap"><canvas id="sr-all"></canvas></div>
     </div>
   </div>
   <div class="table-card">
-    <div class="table-hdr"><h3>ตาราง % Salt Rejection รายวัน</h3></div>
+    <div class="table-hdr"><h3>ตาราง % Salt Rejection รายวัน (RO)</h3></div>
     <div class="tscroll"><table><thead><tr>
       <th>วันที่</th><th>RO#1 Feed</th><th>RO#1 Prod</th><th>RO#1 %SR</th>
       <th>RO#2 Feed</th><th>RO#2 Prod</th><th>RO#2 %SR</th>
@@ -281,10 +346,6 @@ td input[type="text"]{width:92px}
 
 <!-- ════ CONDUCTIVITY ════ -->
 <div id="tab-conduct" class="tab-panel">
-  <div class="membrane-info">
-    <span class="mi-icon">🔧</span>
-    <span class="mi-text">เส้นประสีส้ม = <strong>เปลี่ยน Membrane วันที่ 18/3/69</strong> — ดูแนวโน้ม Conductivity ก่อน/หลังเปลี่ยน</span>
-  </div>
   <div class="chart-grid">
     <div class="chart-card">
       <div class="chart-header"><div><div class="chart-title">RO#1 Feed &amp; Product Conductivity</div><div class="chart-subtitle">μS/cm | Prod STD &lt; 85</div></div><span class="ctag tb">RO#1</span></div>
@@ -301,7 +362,7 @@ td input[type="text"]{width:92px}
       <div class="chart-wrap"><canvas id="cd-ro3"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">Product Conductivity เปรียบเทียบ</div><div class="chart-subtitle">เส้นแดง = STD 85 μS/cm</div></div></div>
+      <div class="chart-header"><div><div class="chart-title">Product Conductivity เปรียบเทียบ RO ทั้งหมด</div></div></div>
       <div class="chart-wrap"><canvas id="cd-compare"></canvas></div>
     </div>
   </div>
@@ -315,14 +376,14 @@ td input[type="text"]{width:92px}
       <div class="chart-wrap"><canvas id="fl-ro12"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">RO#3 Product &amp; Feed Flow</div><div class="chart-subtitle">m³/hr</div></div><span class="ctag tv">RO#3</span></div>
+      <div class="chart-header"><div><div class="chart-title">RO#3 Product Flow</div><div class="chart-subtitle">m³/hr</div></div><span class="ctag tv">RO#3</span></div>
       <div class="chart-wrap"><canvas id="fl-ro3"></canvas></div>
     </div>
   </div>
   <div class="chart-grid">
     <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">UF#3 Product Flow</div><div class="chart-subtitle">m³/hr | STD ≤ 70</div></div><span class="ctag ta">UF#3</span></div>
-      <div class="chart-wrap"><canvas id="fl-uf"></canvas></div>
+      <div class="chart-header"><div><div class="chart-title">UF#1, #2, #3 Product Flow เปรียบเทียบ</div><div class="chart-subtitle">m³/hr | STD ≤ 70</div></div></div>
+      <div class="chart-wrap"><canvas id="fl-uf-all"></canvas></div>
     </div>
     <div class="chart-card">
       <div class="chart-header"><div><div class="chart-title">RO Reject Flow — RO#1 &amp; RO#2</div><div class="chart-subtitle">m³/hr | STD 13–15</div></div></div>
@@ -331,84 +392,229 @@ td input[type="text"]{width:92px}
   </div>
 </div>
 
-<!-- ════ PRESSURE ════ -->
-<div id="tab-pressure" class="tab-panel">
-  <div class="chart-grid">
-    <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">RO#1 Array Pressure</div><div class="chart-subtitle">psi | Arr1 STD 100–160 | Arr2 STD 80–140</div></div><span class="ctag tb">RO#1</span></div>
-      <div class="chart-wrap"><canvas id="pr-ro1"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">RO#2 Array Pressure</div><div class="chart-subtitle">psi</div></div><span class="ctag tt">RO#2</span></div>
-      <div class="chart-wrap"><canvas id="pr-ro2"></canvas></div>
-    </div>
+<!-- ════ DAILY VIEW ════ -->
+<div id="tab-daily" class="tab-panel">
+  <div class="slabel">เลือกวันที่ต้องการดูข้อมูล</div>
+  <div class="day-selector">
+    <span style="font-size:13px;font-weight:600;color:var(--text-secondary);white-space:nowrap">📅 วันที่:</span>
+    <div id="day-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
   </div>
-  <div class="chart-grid">
-    <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">RO#3 Array Pressure</div><div class="chart-subtitle">psi</div></div><span class="ctag tv">RO#3</span></div>
-      <div class="chart-wrap"><canvas id="pr-ro3"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-header"><div><div class="chart-title">UF#3 Pre-Filter Pressure</div><div class="chart-subtitle">psi | Inlet STD 10–25</div></div><span class="ctag ta">UF#3</span></div>
-      <div class="chart-wrap"><canvas id="pr-uf"></canvas></div>
-    </div>
-  </div>
+  <div id="daily-content"></div>
 </div>
 
 <!-- ════ EDIT / ADD ════ -->
 <div id="tab-edit" class="tab-panel">
-  <!-- ADD FORM -->
-  <div class="add-form">
-    <div class="form-title">➕ เพิ่มข้อมูลวันใหม่</div>
-    <div class="form-section">ข้อมูลทั่วไป</div>
-    <div class="form-grid">
-      <div class="form-group"><label class="form-label">วันที่ (เช่น 23/3/69)</label><input class="form-input" type="text" id="f-date" placeholder="23/3/69"></div>
-      <div class="form-group"><label class="form-label">UF#3 Flow (m³/hr)</label><input class="form-input" type="number" id="f-uf3" step="0.1" placeholder="70.0"></div>
+
+  <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-sm);margin-bottom:20px;overflow:hidden">
+    <!-- Header gradient -->
+    <div style="background:linear-gradient(135deg,#1a6ef5,#0ea5e9);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="color:#fff;font-size:15px;font-weight:700">📋 บันทึกข้อมูลประจำวัน</div>
+        <div style="color:rgba(255,255,255,.78);font-size:12px;margin-top:2px" id="form-month-label">กรุณาเลือกวันที่</div>
+      </div>
+      <div id="form-day-badge" style="background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);border-radius:12px;padding:8px 22px;color:#fff;font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace;min-width:90px;text-align:center;letter-spacing:1px">—</div>
     </div>
-    <div class="form-section">RO#1</div>
-    <div class="form-grid">
-      <div class="form-group"><label class="form-label">RO#1 Feed Cond (μS/cm)</label><input class="form-input" type="number" id="f-r1fc" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#1 Prod Cond (μS/cm)</label><input class="form-input" type="number" id="f-r1pc" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#1 Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r1pf" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#1 Reject Flow (m³/hr)</label><input class="form-input" type="number" id="f-r1rj" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#1 Array1 In (psi)</label><input class="form-input" type="number" id="f-r1a1"></div>
-      <div class="form-group"><label class="form-label">RO#1 Array2 In (psi)</label><input class="form-input" type="number" id="f-r1a2"></div>
-    </div>
-    <div class="form-section">RO#2</div>
-    <div class="form-grid">
-      <div class="form-group"><label class="form-label">RO#2 Feed Cond (μS/cm)</label><input class="form-input" type="number" id="f-r2fc" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#2 Prod Cond (μS/cm)</label><input class="form-input" type="number" id="f-r2pc" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#2 Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r2pf" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#2 Reject Flow (m³/hr)</label><input class="form-input" type="number" id="f-r2rj" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#2 Array1 In (psi)</label><input class="form-input" type="number" id="f-r2a1"></div>
-      <div class="form-group"><label class="form-label">RO#2 Array2 In (psi)</label><input class="form-input" type="number" id="f-r2a2"></div>
-    </div>
-    <div class="form-section">RO#3</div>
-    <div class="form-grid">
-      <div class="form-group"><label class="form-label">RO#3 Feed Cond (μS/cm)</label><input class="form-input" type="number" id="f-r3fc" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#3 Prod Cond (μS/cm)</label><input class="form-input" type="number" id="f-r3pc" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#3 Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r3pf" step="0.1"></div>
-      <div class="form-group"><label class="form-label">RO#3 Array1 In (psi)</label><input class="form-input" type="number" id="f-r3a1"></div>
-      <div class="form-group"><label class="form-label">RO#3 Array2 In (psi)</label><input class="form-input" type="number" id="f-r3a2"></div>
-      <div class="form-group"><label class="form-label">UF#3 PreFilter Inlet (psi)</label><input class="form-input" type="number" id="f-ufpin"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:6px">
-      <button class="add-btn" onclick="addRecord()">➕ เพิ่มข้อมูล</button>
-      <button class="cancel-btn" onclick="clearForm()">🗑 ล้างฟอร์ม</button>
+
+    <div style="padding:22px 24px">
+
+      <!-- STEP 1 วันที่ -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="background:var(--blue);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">1</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text-primary)">เลือกวันที่บันทึก</span>
+          <span style="font-size:11px;color:var(--text-muted)">(วันที่มีข้อมูลแล้วจะแสดงสีเทา)</span>
+        </div>
+        <div id="day-picker-wrap" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+        <input class="form-input" type="text" id="f-note" placeholder="📝 หมายเหตุพิเศษ เช่น เปลี่ยน Membrane RO#1" style="width:100%;max-width:420px">
+      </div>
+
+      <div style="height:1.5px;background:linear-gradient(90deg,var(--blue),var(--teal),transparent);margin-bottom:20px;border-radius:2px"></div>
+
+      <!-- STEP 2 UF -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="background:var(--teal);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">2</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text-primary)">ข้อมูล UF (Ultrafiltration)</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px">
+
+          <!-- UF#1 card -->
+          <div style="background:#e0f7fa;border:1.5px solid #67e8f9;border-radius:12px;padding:16px">
+            <div style="font-weight:700;color:#0891b2;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+              🔵 UF ชุด 1 <span style="background:#0891b2;color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600">UF#1</span>
+            </div>
+            <div style="display:grid;gap:9px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div class="form-group">
+                  <label class="form-label" style="color:#0e7490">Feed Cond (μS/cm)</label>
+                  <input class="form-input" type="number" id="f-uf1fc" step="0.1" placeholder="0.0" style="border-color:#67e8f9" oninput="calcSR('uf1')">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="color:#0e7490">Prod Cond (μS/cm)</label>
+                  <input class="form-input" type="number" id="f-uf1pc" step="0.1" placeholder="0.0" style="border-color:#67e8f9" oninput="calcSR('uf1')">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end">
+                <div class="form-group">
+                  <label class="form-label" style="color:#0e7490">Flow (m³/hr)</label>
+                  <input class="form-input" type="number" id="f-uf1fl" step="0.1" placeholder="70.0" style="border-color:#67e8f9">
+                </div>
+                <div style="background:#fff;border-radius:8px;padding:7px 10px;text-align:center;border:1px solid #b2ebf2">
+                  <div style="font-size:9px;color:#0891b2;font-weight:700;text-transform:uppercase;letter-spacing:.5px">%Salt Reject</div>
+                  <div id="sr-preview-uf1" style="font-size:20px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UF#2 card -->
+          <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:12px;padding:16px">
+            <div style="font-weight:700;color:#c2410c;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+              🔶 UF ชุด 2 <span style="background:#c2410c;color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600">UF#2</span>
+            </div>
+            <div style="display:grid;gap:9px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div class="form-group">
+                  <label class="form-label" style="color:#9a3412">Feed Cond (μS/cm)</label>
+                  <input class="form-input" type="number" id="f-uf2fc" step="0.1" placeholder="0.0" style="border-color:#fdba74" oninput="calcSR('uf2')">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="color:#9a3412">Prod Cond (μS/cm)</label>
+                  <input class="form-input" type="number" id="f-uf2pc" step="0.1" placeholder="0.0" style="border-color:#fdba74" oninput="calcSR('uf2')">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end">
+                <div class="form-group">
+                  <label class="form-label" style="color:#9a3412">Flow (m³/hr)</label>
+                  <input class="form-input" type="number" id="f-uf2fl" step="0.1" placeholder="70.0" style="border-color:#fdba74">
+                </div>
+                <div style="background:#fff;border-radius:8px;padding:7px 10px;text-align:center;border:1px solid #fed7aa">
+                  <div style="font-size:9px;color:#c2410c;font-weight:700;text-transform:uppercase;letter-spacing:.5px">%Salt Reject</div>
+                  <div id="sr-preview-uf2" style="font-size:20px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UF#3 card -->
+          <div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;padding:16px">
+            <div style="font-weight:700;color:#b45309;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+              🟡 UF ชุด 3 <span style="background:#b45309;color:#fff;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:600">UF#3</span>
+            </div>
+            <div style="display:grid;gap:9px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <div class="form-group">
+                  <label class="form-label" style="color:#92400e">Feed Cond (μS/cm)</label>
+                  <input class="form-input" type="number" id="f-uf3fc" step="0.1" placeholder="0.0" style="border-color:#fcd34d" oninput="calcSR('uf3')">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" style="color:#92400e">Prod Cond (μS/cm)</label>
+                  <input class="form-input" type="number" id="f-uf3pc" step="0.1" placeholder="0.0" style="border-color:#fcd34d" oninput="calcSR('uf3')">
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end">
+                <div class="form-group">
+                  <label class="form-label" style="color:#92400e">Flow (m³/hr)</label>
+                  <input class="form-input" type="number" id="f-uf3fl" step="0.1" placeholder="70.0" style="border-color:#fcd34d">
+                </div>
+                <div style="background:#fff;border-radius:8px;padding:7px 10px;text-align:center;border:1px solid #fde68a">
+                  <div style="font-size:9px;color:#b45309;font-weight:700;text-transform:uppercase;letter-spacing:.5px">%Salt Reject</div>
+                  <div id="sr-preview-uf3" style="font-size:20px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:1.5px;background:linear-gradient(90deg,var(--blue),var(--violet),transparent);margin-bottom:20px;border-radius:2px"></div>
+
+      <!-- STEP 3 RO -->
+      <div style="margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+          <span style="background:var(--violet);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">3</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text-primary)">ข้อมูล RO (Reverse Osmosis)</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px">
+
+          <!-- RO#1 -->
+          <div style="background:#eef4ff;border:1.5px solid #93c5fd;border-radius:12px;padding:16px">
+            <div style="font-weight:700;color:var(--blue);font-size:13px;margin-bottom:11px">🔷 RO#1</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="form-group"><label class="form-label" style="color:#1d4ed8">Feed Cond</label><input class="form-input" type="number" id="f-r1fc" step="0.1" placeholder="0.0" style="border-color:#93c5fd" oninput="calcSR('ro1')"></div>
+              <div class="form-group"><label class="form-label" style="color:#1d4ed8">Prod Cond</label><input class="form-input" type="number" id="f-r1pc" step="0.1" placeholder="0.0" style="border-color:#93c5fd" oninput="calcSR('ro1')"></div>
+              <div class="form-group"><label class="form-label" style="color:#1d4ed8">Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r1pf" step="0.1" placeholder="38.0" style="border-color:#93c5fd"></div>
+              <div class="form-group"><label class="form-label" style="color:#1d4ed8">Reject Flow (m³/hr)</label><input class="form-input" type="number" id="f-r1rj" step="0.1" placeholder="13.0" style="border-color:#93c5fd"></div>
+              <div class="form-group"><label class="form-label" style="color:#1d4ed8">Array1 In (psi)</label><input class="form-input" type="number" id="f-r1a1" placeholder="150" style="border-color:#93c5fd"></div>
+              <div style="background:#fff;border-radius:8px;padding:7px 8px;text-align:center;border:1px solid #bfdbfe">
+                <div style="font-size:9px;color:var(--blue);font-weight:700;text-transform:uppercase">%Salt Reject</div>
+                <div id="sr-preview-ro1" style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RO#2 -->
+          <div style="background:#e6faf8;border:1.5px solid #5eead4;border-radius:12px;padding:16px">
+            <div style="font-weight:700;color:var(--teal);font-size:13px;margin-bottom:11px">🔷 RO#2</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="form-group"><label class="form-label" style="color:#0f766e">Feed Cond</label><input class="form-input" type="number" id="f-r2fc" step="0.1" placeholder="0.0" style="border-color:#5eead4" oninput="calcSR('ro2')"></div>
+              <div class="form-group"><label class="form-label" style="color:#0f766e">Prod Cond</label><input class="form-input" type="number" id="f-r2pc" step="0.1" placeholder="0.0" style="border-color:#5eead4" oninput="calcSR('ro2')"></div>
+              <div class="form-group"><label class="form-label" style="color:#0f766e">Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r2pf" step="0.1" placeholder="38.0" style="border-color:#5eead4"></div>
+              <div class="form-group"><label class="form-label" style="color:#0f766e">Reject Flow (m³/hr)</label><input class="form-input" type="number" id="f-r2rj" step="0.1" placeholder="13.0" style="border-color:#5eead4"></div>
+              <div class="form-group"><label class="form-label" style="color:#0f766e">Array1 In (psi)</label><input class="form-input" type="number" id="f-r2a1" placeholder="150" style="border-color:#5eead4"></div>
+              <div style="background:#fff;border-radius:8px;padding:7px 8px;text-align:center;border:1px solid #99f6e4">
+                <div style="font-size:9px;color:var(--teal);font-weight:700;text-transform:uppercase">%Salt Reject</div>
+                <div id="sr-preview-ro2" style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RO#3 -->
+          <div style="background:#f3eeff;border:1.5px solid #c4b5fd;border-radius:12px;padding:16px">
+            <div style="font-weight:700;color:var(--violet);font-size:13px;margin-bottom:11px">🔷 RO#3</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div class="form-group"><label class="form-label" style="color:#6d28d9">Feed Cond</label><input class="form-input" type="number" id="f-r3fc" step="0.1" placeholder="0.0" style="border-color:#c4b5fd" oninput="calcSR('ro3')"></div>
+              <div class="form-group"><label class="form-label" style="color:#6d28d9">Prod Cond</label><input class="form-input" type="number" id="f-r3pc" step="0.1" placeholder="0.0" style="border-color:#c4b5fd" oninput="calcSR('ro3')"></div>
+              <div class="form-group"><label class="form-label" style="color:#6d28d9">Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r3pf" step="0.1" placeholder="50.0" style="border-color:#c4b5fd"></div>
+              <div class="form-group"><label class="form-label" style="color:#6d28d9">Array1 In (psi)</label><input class="form-input" type="number" id="f-r3a1" placeholder="120" style="border-color:#c4b5fd"></div>
+              <div class="form-group"><label class="form-label" style="color:#6d28d9">Array2 In (psi)</label><input class="form-input" type="number" id="f-r3a2" placeholder="90" style="border-color:#c4b5fd"></div>
+              <div class="form-group"><label class="form-label" style="color:#6d28d9">UF#3 PreFilter (psi)</label><input class="form-input" type="number" id="f-ufpin" placeholder="18" style="border-color:#c4b5fd"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;align-items:center;padding:16px 0 4px;border-top:1px solid var(--border-light)">
+        <button onclick="addRecord()" style="padding:12px 30px;background:linear-gradient(135deg,var(--blue),#0ea5e9);color:#fff;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(26,110,245,.35);transition:opacity .15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          ➕ บันทึกข้อมูล
+        </button>
+        <button onclick="clearForm()" style="padding:12px 20px;background:#fff;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:10px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer">
+          🗑 ล้างฟอร์ม
+        </button>
+        <div id="form-validation-msg" style="font-size:12px;color:var(--rose);font-weight:600;display:none">⚠️ กรุณาเลือกวันที่ก่อน</div>
+      </div>
+
     </div>
   </div>
 
   <!-- EDIT TABLE -->
   <div class="table-card">
-    <div class="table-hdr"><h3>ตารางข้อมูลทั้งหมด — คลิก ✏️ แก้ไข | 🗑 ลบ</h3>
-      <span style="font-size:11px;color:var(--text-muted)">แก้ไขแล้วกด 💾 บันทึก เพื่ออัปเดตกราฟ</span></div>
+    <div class="table-hdr">
+      <h3>ตารางข้อมูลทั้งหมด — คลิก ✏️ แก้ไข | 🗑 ลบ</h3>
+      <span style="font-size:11px;color:var(--text-muted)">แก้ไขแล้วกด 💾 บันทึก</span>
+    </div>
     <div class="tscroll"><table>
       <thead><tr>
-        <th>วันที่</th><th>UF#3 Flow</th>
+        <th>วันที่</th>
+        <th>UF1 FeedC</th><th>UF1 ProdC</th><th>UF1 Flow</th>
+        <th>UF2 FeedC</th><th>UF2 ProdC</th><th>UF2 Flow</th>
+        <th>UF3 FeedC</th><th>UF3 ProdC</th><th>UF3 Flow</th>
         <th>R1 FeedC</th><th>R1 ProdC</th><th>R1 PFlow</th>
         <th>R2 FeedC</th><th>R2 ProdC</th><th>R2 PFlow</th>
         <th>R3 FeedC</th><th>R3 ProdC</th><th>R3 PFlow</th>
-        <th></th>
+        <th>หมายเหตุ</th><th></th>
       </tr></thead>
       <tbody id="edit-tbody"></tbody>
     </table></div>
@@ -419,44 +625,112 @@ td input[type="text"]{width:92px}
 <div class="success-toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
-//  DATA
-// ═══════════════════════════════════════════
-let DATA = [
-  {date:"1/3/69",  uf3_flow:70.2, ro1_pflow:32.2, ro1_fcond:645.5, ro1_pcond:63.3, ro2_pflow:39.8,  ro2_fcond:509.9, ro2_pcond:14.8, ro3_pflow:48.8, ro3_fcond:349.2, ro3_pcond:42.9, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:90,  ro1_reject:12.7, ro2_reject:14.6, uf3_pin:24, uf3_pout:22},
-  {date:"2/3/69",  uf3_flow:70.3, ro1_pflow:31.1, ro1_fcond:690.8, ro1_pcond:18.1, ro2_pflow:32.8,  ro2_fcond:561.4, ro2_pcond:14.4, ro3_pflow:49.4, ro3_fcond:357.1, ro3_pcond:40.4, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:90,  ro1_reject:12.7, ro2_reject:14.7, uf3_pin:24, uf3_pout:22},
-  {date:"3/3/69",  uf3_flow:72.4, ro1_pflow:32.2, ro1_fcond:691.7, ro1_pcond:71.2, ro2_pflow:33.0,  ro2_fcond:576.7, ro2_pcond:22.0, ro3_pflow:49.1, ro3_fcond:381.9, ro3_pcond:50.8, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:85,  ro1_reject:12.5, ro2_reject:14.5, uf3_pin:24, uf3_pout:22},
-  {date:"4/3/69",  uf3_flow:70.2, ro1_pflow:31.5, ro1_fcond:769.7, ro1_pcond:72.7, ro2_pflow:32.4,  ro2_fcond:551.3, ro2_pcond:16.4, ro3_pflow:48.6, ro3_fcond:378.5, ro3_pcond:45.8, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:90,  ro1_reject:12.7, ro2_reject:14.7, uf3_pin:24, uf3_pout:22},
-  {date:"5/3/69",  uf3_flow:70.1, ro1_pflow:31.3, ro1_fcond:678.0, ro1_pcond:70.6, ro2_pflow:33.4,  ro2_fcond:533.3, ro2_pcond:15.9, ro3_pflow:49.2, ro3_fcond:363.9, ro3_pcond:45.3, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:90,  ro1_reject:12.6, ro2_reject:14.6, uf3_pin:24, uf3_pout:22},
-  {date:"6/3/69",  uf3_flow:70.3, ro1_pflow:31.3, ro1_fcond:678.0, ro1_pcond:70.6, ro2_pflow:33.4,  ro2_fcond:533.3, ro2_pcond:15.9, ro3_pflow:49.4, ro3_fcond:365.5, ro3_pcond:45.4, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:85,  ro1_reject:12.6, ro2_reject:14.6, uf3_pin:24, uf3_pout:22},
-  {date:"7/3/69",  uf3_flow:70.0, ro1_pflow:30.9, ro1_fcond:701.0, ro1_pcond:67.0, ro2_pflow:39.1,  ro2_fcond:550.0, ro2_pcond:19.9, ro3_pflow:48.9, ro3_fcond:401.5, ro3_pcond:49.1, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:185, ro3_arr1:125, ro3_arr2:85,  ro1_reject:12.4, ro2_reject:14.9, uf3_pin:24, uf3_pout:22},
-  {date:"8/3/69",  uf3_flow:72.6, ro1_pflow:32.6, ro1_fcond:663.5, ro1_pcond:61.4, ro2_pflow:34.8,  ro2_fcond:542.1, ro2_pcond:16.6, ro3_pflow:49.1, ro3_fcond:411.5, ro3_pcond:49.3, ro1_arr1:160, ro1_arr2:140, ro2_arr1:210, ro2_arr2:190, ro3_arr1:125, ro3_arr2:90,  ro1_reject:12.5, ro2_reject:13.8, uf3_pin:24, uf3_pout:22},
-  {date:"9/3/69",  uf3_flow:70.1, ro1_pflow:32.7, ro1_fcond:687.2, ro1_pcond:68.8, ro2_pflow:38.5,  ro2_fcond:595.5, ro2_pcond:19.2, ro3_pflow:49.0, ro3_fcond:404.3, ro3_pcond:49.3, ro1_arr1:180, ro1_arr2:160, ro2_arr1:190, ro2_arr2:165, ro3_arr1:125, ro3_arr2:85,  ro1_reject:10.3, ro2_reject:13.8, uf3_pin:18, uf3_pout:17},
-  {date:"10/3/69", uf3_flow:70.1, ro1_pflow:32.7, ro1_fcond:687.2, ro1_pcond:68.8, ro2_pflow:38.5,  ro2_fcond:595.5, ro2_pcond:19.2, ro3_pflow:49.2, ro3_fcond:369.2, ro3_pcond:54.4, ro1_arr1:180, ro1_arr2:160, ro2_arr1:190, ro2_arr2:165, ro3_arr1:125, ro3_arr2:85,  ro1_reject:10.3, ro2_reject:13.8, uf3_pin:18, uf3_pout:16},
-  {date:"11/3/69", uf3_flow:70.4, ro1_pflow:31.9, ro1_fcond:718.7, ro1_pcond:72.0, ro2_pflow:38.7,  ro2_fcond:659.3, ro2_pcond:20.3, ro3_pflow:49.2, ro3_fcond:398.3, ro3_pcond:49.3, ro1_arr1:180, ro1_arr2:150, ro2_arr1:190, ro2_arr2:165, ro3_arr1:125, ro3_arr2:85,  ro1_reject:13.5, ro2_reject:13.9, uf3_pin:18, uf3_pout:16},
-  {date:"12/3/69", uf3_flow:70.3, ro1_pflow:31.5, ro1_fcond:706.5, ro1_pcond:67.8, ro2_pflow:38.3,  ro2_fcond:587.6, ro2_pcond:20.9, ro3_pflow:49.1, ro3_fcond:398.6, ro3_pcond:50.8, ro1_arr1:120, ro1_arr2:150, ro2_arr1:190, ro2_arr2:165, ro3_arr1:125, ro3_arr2:85,  ro1_reject:13.2, ro2_reject:13.8, uf3_pin:18, uf3_pout:16},
-  {date:"14/3/69", uf3_flow:70.1, ro1_pflow:30.6, ro1_fcond:651.4, ro1_pcond:60.8, ro2_pflow:38.3,  ro2_fcond:511.3, ro2_pcond:18.9, ro3_pflow:50.2, ro3_fcond:364.9, ro3_pcond:51.6, ro1_arr1:180, ro1_arr2:150, ro2_arr1:190, ro2_arr2:165, ro3_arr1:125, ro3_arr2:85,  ro1_reject:13.2, ro2_reject:14.1, uf3_pin:18, uf3_pout:16},
-  {date:"15/3/69", uf3_flow:70.0, ro1_pflow:31.6, ro1_fcond:664.1, ro1_pcond:64.8, ro2_pflow:37.6,  ro2_fcond:521.1, ro2_pcond:15.5, ro3_pflow:48.3, ro3_fcond:351.9, ro3_pcond:41.7, ro1_arr1:180, ro1_arr2:150, ro2_arr1:190, ro2_arr2:165, ro3_arr1:125, ro3_arr2:85,  ro1_reject:13.3, ro2_reject:14.0, uf3_pin:18, uf3_pout:16},
-  {date:"16/3/69", uf3_flow:70.1, ro1_pflow:31.5, ro1_fcond:689.6, ro1_pcond:69.6, ro2_pflow:37.4,  ro2_fcond:540.8, ro2_pcond:16.7, ro3_pflow:47.9, ro3_fcond:376.1, ro3_pcond:47.4, ro1_arr1:170, ro1_arr2:150, ro2_arr1:190, ro2_arr2:169, ro3_arr1:125, ro3_arr2:85,  ro1_reject:13.3, ro2_reject:14.0, uf3_pin:18, uf3_pout:16},
-  {date:"18/3/69", uf3_flow:69.9, ro1_pflow:36.4, ro1_fcond:372.2, ro1_pcond:10.1, ro2_pflow:34.6,  ro2_fcond:296.1, ro2_pcond:8.5,  ro3_pflow:50.2, ro3_fcond:481.4, ro3_pcond:14.0, ro1_arr1:150, ro1_arr2:130, ro2_arr1:220, ro2_arr2:200, ro3_arr1:120, ro3_arr2:110, ro1_reject:13.1, ro2_reject:12.9, uf3_pin:18, uf3_pout:16, membrane_change:true},
-  {date:"19/3/69", uf3_flow:71.6, ro1_pflow:37.5, ro1_fcond:340.0, ro1_pcond:9.9,  ro2_pflow:35.4,  ro2_fcond:241.5, ro2_pcond:9.2,  ro3_pflow:50.7, ro3_fcond:427.9, ro3_pcond:9.3,  ro1_arr1:150, ro1_arr2:130, ro2_arr1:220, ro2_arr2:200, ro3_arr1:120, ro3_arr2:110, ro1_reject:13.1, ro2_reject:13.0, uf3_pin:18, uf3_pout:16},
-  {date:"20/3/69", uf3_flow:70.4, ro1_pflow:37.3, ro1_fcond:322.9, ro1_pcond:9.4,  ro2_pflow:35.8,  ro2_fcond:265.0, ro2_pcond:8.8,  ro3_pflow:49.9, ro3_fcond:411.0, ro3_pcond:7.8,  ro1_arr1:160, ro1_arr2:130, ro2_arr1:220, ro2_arr2:190, ro3_arr1:120, ro3_arr2:110, ro1_reject:10.2, ro2_reject:14.7, uf3_pin:18, uf3_pout:16},
-  {date:"21/3/69", uf3_flow:70.2, ro1_pflow:38.0, ro1_fcond:287.9, ro1_pcond:8.9,  ro2_pflow:35.0,  ro2_fcond:280.9, ro2_pcond:8.9,  ro3_pflow:50.1, ro3_fcond:312.4, ro3_pcond:7.0,  ro1_arr1:150, ro1_arr2:130, ro2_arr1:220, ro2_arr2:190, ro3_arr1:120, ro3_arr2:110, ro1_reject:10.0, ro2_reject:10.7, uf3_pin:18, uf3_pout:16},
-  {date:"22/3/69", uf3_flow:70.5, ro1_pflow:37.7, ro1_fcond:278.3, ro1_pcond:8.2,  ro2_pflow:35.9,  ro2_fcond:224.3, ro2_pcond:8.4,  ro3_pflow:50.9, ro3_fcond:316.1, ro3_pcond:6.8,  ro1_arr1:160, ro1_arr2:100, ro2_arr1:220, ro2_arr2:190, ro3_arr1:120, ro3_arr2:110, ro1_reject:13.1, ro2_reject:10.7, uf3_pin:18, uf3_pout:16},
-  {date:"23/3/69", uf3_flow:70.5, ro1_pflow:38.5, ro1_fcond:850.8, ro1_pcond:11.9, ro2_pflow:36.0,  ro2_fcond:380.2, ro2_pcond:11.5, ro3_pflow:50.2, ro3_fcond:467.9, ro3_pcond:9.2,  ro1_arr1:150, ro1_arr2:130, ro2_arr1:220, ro2_arr2:190, ro3_arr1:120, ro3_arr2:110, ro1_reject:13.2, ro2_reject:13.5, uf3_pin:18, uf3_pout:16},
-  {date:"24/3/69", uf3_flow:71.2, ro1_pflow:38.1, ro1_fcond:320.1, ro1_pcond:9.4,  ro2_pflow:37.2,  ro2_fcond:255.1, ro2_pcond:9.6,  ro3_pflow:50.4, ro3_fcond:411.2, ro3_pcond:6.5,  ro1_arr1:160, ro1_arr2:100, ro2_arr1:220, ro2_arr2:190, ro3_arr1:120, ro3_arr2:110, ro1_reject:10.3, ro2_reject:13.6, uf3_pin:18, uf3_pout:16},
-];
+// ══════════════════════════════════════════════════════
+//  DATA STRUCTURE
+//  ALL_DATA[year][month] = [ ...records ]
+//  record fields:
+//    day, date(string),
+//    uf1_fcond, uf1_pcond, uf1_flow,
+//    uf2_fcond, uf2_pcond, uf2_flow,
+//    uf3_fcond, uf3_pcond, uf3_flow,  (= old UF#3)
+//    ro1_fcond, ro1_pcond, ro1_pflow, ro1_reject, ro1_arr1, ro1_arr2,
+//    ro2_fcond, ro2_pcond, ro2_pflow, ro2_reject, ro2_arr1, ro2_arr2,
+//    ro3_fcond, ro3_pcond, ro3_pflow, ro3_arr1, ro3_arr2,
+//    uf3_pin, uf3_pout,
+//    membrane_change, note
+// ══════════════════════════════════════════════════════
 
-const MEMBRANE_DATE = "18/3/69";
+let ALL_DATA = {
+  2569: {
+    3: [
+      {day:1,  uf1_fcond:520.0,uf1_pcond:12.5,uf1_flow:68.0, uf2_fcond:498.0,uf2_pcond:11.8,uf2_flow:67.5, uf3_fcond:645.5,uf3_pcond:63.3,uf3_flow:70.2, ro1_pflow:32.2,ro1_fcond:645.5,ro1_pcond:63.3,ro2_pflow:39.8,ro2_fcond:509.9,ro2_pcond:14.8,ro3_pflow:48.8,ro3_fcond:349.2,ro3_pcond:42.9,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:90,ro1_reject:12.7,ro2_reject:14.6,uf3_pin:24,uf3_pout:22},
+      {day:2,  uf1_fcond:530.0,uf1_pcond:12.8,uf1_flow:68.2, uf2_fcond:505.0,uf2_pcond:12.0,uf2_flow:67.8, uf3_fcond:690.8,uf3_pcond:18.1,uf3_flow:70.3, ro1_pflow:31.1,ro1_fcond:690.8,ro1_pcond:18.1,ro2_pflow:32.8,ro2_fcond:561.4,ro2_pcond:14.4,ro3_pflow:49.4,ro3_fcond:357.1,ro3_pcond:40.4,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:90,ro1_reject:12.7,ro2_reject:14.7,uf3_pin:24,uf3_pout:22},
+      {day:3,  uf1_fcond:525.0,uf1_pcond:12.3,uf1_flow:68.5, uf2_fcond:502.0,uf2_pcond:11.5,uf2_flow:68.0, uf3_fcond:691.7,uf3_pcond:71.2,uf3_flow:72.4, ro1_pflow:32.2,ro1_fcond:691.7,ro1_pcond:71.2,ro2_pflow:33.0,ro2_fcond:576.7,ro2_pcond:22.0,ro3_pflow:49.1,ro3_fcond:381.9,ro3_pcond:50.8,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:85,ro1_reject:12.5,ro2_reject:14.5,uf3_pin:24,uf3_pout:22},
+      {day:4,  uf1_fcond:540.0,uf1_pcond:13.0,uf1_flow:67.9, uf2_fcond:510.0,uf2_pcond:12.2,uf2_flow:68.1, uf3_fcond:769.7,uf3_pcond:72.7,uf3_flow:70.2, ro1_pflow:31.5,ro1_fcond:769.7,ro1_pcond:72.7,ro2_pflow:32.4,ro2_fcond:551.3,ro2_pcond:16.4,ro3_pflow:48.6,ro3_fcond:378.5,ro3_pcond:45.8,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:90,ro1_reject:12.7,ro2_reject:14.7,uf3_pin:24,uf3_pout:22},
+      {day:5,  uf1_fcond:515.0,uf1_pcond:12.0,uf1_flow:68.8, uf2_fcond:495.0,uf2_pcond:11.6,uf2_flow:67.6, uf3_fcond:678.0,uf3_pcond:70.6,uf3_flow:70.1, ro1_pflow:31.3,ro1_fcond:678.0,ro1_pcond:70.6,ro2_pflow:33.4,ro2_fcond:533.3,ro2_pcond:15.9,ro3_pflow:49.2,ro3_fcond:363.9,ro3_pcond:45.3,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:90,ro1_reject:12.6,ro2_reject:14.6,uf3_pin:24,uf3_pout:22},
+      {day:6,  uf1_fcond:518.0,uf1_pcond:12.1,uf1_flow:68.6, uf2_fcond:496.0,uf2_pcond:11.7,uf2_flow:67.7, uf3_fcond:678.0,uf3_pcond:70.6,uf3_flow:70.3, ro1_pflow:31.3,ro1_fcond:678.0,ro1_pcond:70.6,ro2_pflow:33.4,ro2_fcond:533.3,ro2_pcond:15.9,ro3_pflow:49.4,ro3_fcond:365.5,ro3_pcond:45.4,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:85,ro1_reject:12.6,ro2_reject:14.6,uf3_pin:24,uf3_pout:22},
+      {day:7,  uf1_fcond:535.0,uf1_pcond:12.9,uf1_flow:68.3, uf2_fcond:508.0,uf2_pcond:12.1,uf2_flow:68.2, uf3_fcond:701.0,uf3_pcond:67.0,uf3_flow:70.0, ro1_pflow:30.9,ro1_fcond:701.0,ro1_pcond:67.0,ro2_pflow:39.1,ro2_fcond:550.0,ro2_pcond:19.9,ro3_pflow:48.9,ro3_fcond:401.5,ro3_pcond:49.1,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:185,ro3_arr1:125,ro3_arr2:85,ro1_reject:12.4,ro2_reject:14.9,uf3_pin:24,uf3_pout:22},
+      {day:8,  uf1_fcond:510.0,uf1_pcond:11.8,uf1_flow:69.0, uf2_fcond:492.0,uf2_pcond:11.3,uf2_flow:68.4, uf3_fcond:663.5,uf3_pcond:61.4,uf3_flow:72.6, ro1_pflow:32.6,ro1_fcond:663.5,ro1_pcond:61.4,ro2_pflow:34.8,ro2_fcond:542.1,ro2_pcond:16.6,ro3_pflow:49.1,ro3_fcond:411.5,ro3_pcond:49.3,ro1_arr1:160,ro1_arr2:140,ro2_arr1:210,ro2_arr2:190,ro3_arr1:125,ro3_arr2:90,ro1_reject:12.5,ro2_reject:13.8,uf3_pin:24,uf3_pout:22},
+      {day:9,  uf1_fcond:522.0,uf1_pcond:12.4,uf1_flow:68.1, uf2_fcond:500.0,uf2_pcond:11.9,uf2_flow:67.9, uf3_fcond:687.2,uf3_pcond:68.8,uf3_flow:70.1, ro1_pflow:32.7,ro1_fcond:687.2,ro1_pcond:68.8,ro2_pflow:38.5,ro2_fcond:595.5,ro2_pcond:19.2,ro3_pflow:49.0,ro3_fcond:404.3,ro3_pcond:49.3,ro1_arr1:180,ro1_arr2:160,ro2_arr1:190,ro2_arr2:165,ro3_arr1:125,ro3_arr2:85,ro1_reject:10.3,ro2_reject:13.8,uf3_pin:18,uf3_pout:17},
+      {day:10, uf1_fcond:522.0,uf1_pcond:12.4,uf1_flow:68.1, uf2_fcond:500.0,uf2_pcond:11.9,uf2_flow:67.9, uf3_fcond:687.2,uf3_pcond:68.8,uf3_flow:70.1, ro1_pflow:32.7,ro1_fcond:687.2,ro1_pcond:68.8,ro2_pflow:38.5,ro2_fcond:595.5,ro2_pcond:19.2,ro3_pflow:49.2,ro3_fcond:369.2,ro3_pcond:54.4,ro1_arr1:180,ro1_arr2:160,ro2_arr1:190,ro2_arr2:165,ro3_arr1:125,ro3_arr2:85,ro1_reject:10.3,ro2_reject:13.8,uf3_pin:18,uf3_pout:16},
+      {day:11, uf1_fcond:545.0,uf1_pcond:13.1,uf1_flow:68.0, uf2_fcond:512.0,uf2_pcond:12.3,uf2_flow:67.8, uf3_fcond:718.7,uf3_pcond:72.0,uf3_flow:70.4, ro1_pflow:31.9,ro1_fcond:718.7,ro1_pcond:72.0,ro2_pflow:38.7,ro2_fcond:659.3,ro2_pcond:20.3,ro3_pflow:49.2,ro3_fcond:398.3,ro3_pcond:49.3,ro1_arr1:180,ro1_arr2:150,ro2_arr1:190,ro2_arr2:165,ro3_arr1:125,ro3_arr2:85,ro1_reject:13.5,ro2_reject:13.9,uf3_pin:18,uf3_pout:16},
+      {day:12, uf1_fcond:538.0,uf1_pcond:12.8,uf1_flow:68.2, uf2_fcond:506.0,uf2_pcond:12.0,uf2_flow:68.0, uf3_fcond:706.5,uf3_pcond:67.8,uf3_flow:70.3, ro1_pflow:31.5,ro1_fcond:706.5,ro1_pcond:67.8,ro2_pflow:38.3,ro2_fcond:587.6,ro2_pcond:20.9,ro3_pflow:49.1,ro3_fcond:398.6,ro3_pcond:50.8,ro1_arr1:120,ro1_arr2:150,ro2_arr1:190,ro2_arr2:165,ro3_arr1:125,ro3_arr2:85,ro1_reject:13.2,ro2_reject:13.8,uf3_pin:18,uf3_pout:16},
+      {day:14, uf1_fcond:512.0,uf1_pcond:12.0,uf1_flow:68.5, uf2_fcond:494.0,uf2_pcond:11.5,uf2_flow:68.1, uf3_fcond:651.4,uf3_pcond:60.8,uf3_flow:70.1, ro1_pflow:30.6,ro1_fcond:651.4,ro1_pcond:60.8,ro2_pflow:38.3,ro2_fcond:511.3,ro2_pcond:18.9,ro3_pflow:50.2,ro3_fcond:364.9,ro3_pcond:51.6,ro1_arr1:180,ro1_arr2:150,ro2_arr1:190,ro2_arr2:165,ro3_arr1:125,ro3_arr2:85,ro1_reject:13.2,ro2_reject:14.1,uf3_pin:18,uf3_pout:16},
+      {day:15, uf1_fcond:508.0,uf1_pcond:11.9,uf1_flow:68.7, uf2_fcond:490.0,uf2_pcond:11.4,uf2_flow:68.2, uf3_fcond:664.1,uf3_pcond:64.8,uf3_flow:70.0, ro1_pflow:31.6,ro1_fcond:664.1,ro1_pcond:64.8,ro2_pflow:37.6,ro2_fcond:521.1,ro2_pcond:15.5,ro3_pflow:48.3,ro3_fcond:351.9,ro3_pcond:41.7,ro1_arr1:180,ro1_arr2:150,ro2_arr1:190,ro2_arr2:165,ro3_arr1:125,ro3_arr2:85,ro1_reject:13.3,ro2_reject:14.0,uf3_pin:18,uf3_pout:16},
+      {day:16, uf1_fcond:520.0,uf1_pcond:12.2,uf1_flow:68.3, uf2_fcond:498.0,uf2_pcond:11.8,uf2_flow:67.8, uf3_fcond:689.6,uf3_pcond:69.6,uf3_flow:70.1, ro1_pflow:31.5,ro1_fcond:689.6,ro1_pcond:69.6,ro2_pflow:37.4,ro2_fcond:540.8,ro2_pcond:16.7,ro3_pflow:47.9,ro3_fcond:376.1,ro3_pcond:47.4,ro1_arr1:170,ro1_arr2:150,ro2_arr1:190,ro2_arr2:169,ro3_arr1:125,ro3_arr2:85,ro1_reject:13.3,ro2_reject:14.0,uf3_pin:18,uf3_pout:16},
+      {day:18, uf1_fcond:290.0,uf1_pcond:7.5,uf1_flow:69.5,  uf2_fcond:280.0,uf2_pcond:7.2,uf2_flow:69.2,  uf3_fcond:372.2,uf3_pcond:10.1,uf3_flow:69.9, ro1_pflow:36.4,ro1_fcond:372.2,ro1_pcond:10.1,ro2_pflow:34.6,ro2_fcond:296.1,ro2_pcond:8.5,ro3_pflow:50.2,ro3_fcond:481.4,ro3_pcond:14.0,ro1_arr1:150,ro1_arr2:130,ro2_arr1:220,ro2_arr2:200,ro3_arr1:120,ro3_arr2:110,ro1_reject:13.1,ro2_reject:12.9,uf3_pin:18,uf3_pout:16,membrane_change:true,note:'เปลี่ยน Membrane RO#1&3'},
+      {day:19, uf1_fcond:265.0,uf1_pcond:7.0,uf1_flow:69.8,  uf2_fcond:258.0,uf2_pcond:6.9,uf2_flow:69.5,  uf3_fcond:340.0,uf3_pcond:9.9,uf3_flow:71.6, ro1_pflow:37.5,ro1_fcond:340.0,ro1_pcond:9.9,ro2_pflow:35.4,ro2_fcond:241.5,ro2_pcond:9.2,ro3_pflow:50.7,ro3_fcond:427.9,ro3_pcond:9.3,ro1_arr1:150,ro1_arr2:130,ro2_arr1:220,ro2_arr2:200,ro3_arr1:120,ro3_arr2:110,ro1_reject:13.1,ro2_reject:13.0,uf3_pin:18,uf3_pout:16},
+      {day:20, uf1_fcond:255.0,uf1_pcond:6.8,uf1_flow:70.0,  uf2_fcond:250.0,uf2_pcond:6.7,uf2_flow:69.7,  uf3_fcond:322.9,uf3_pcond:9.4,uf3_flow:70.4, ro1_pflow:37.3,ro1_fcond:322.9,ro1_pcond:9.4,ro2_pflow:35.8,ro2_fcond:265.0,ro2_pcond:8.8,ro3_pflow:49.9,ro3_fcond:411.0,ro3_pcond:7.8,ro1_arr1:160,ro1_arr2:130,ro2_arr1:220,ro2_arr2:190,ro3_arr1:120,ro3_arr2:110,ro1_reject:10.2,ro2_reject:14.7,uf3_pin:18,uf3_pout:16},
+      {day:21, uf1_fcond:248.0,uf1_pcond:6.5,uf1_flow:70.0,  uf2_fcond:245.0,uf2_pcond:6.4,uf2_flow:69.8,  uf3_fcond:287.9,uf3_pcond:8.9,uf3_flow:70.2, ro1_pflow:38.0,ro1_fcond:287.9,ro1_pcond:8.9,ro2_pflow:35.0,ro2_fcond:280.9,ro2_pcond:8.9,ro3_pflow:50.1,ro3_fcond:312.4,ro3_pcond:7.0,ro1_arr1:150,ro1_arr2:130,ro2_arr1:220,ro2_arr2:190,ro3_arr1:120,ro3_arr2:110,ro1_reject:10.0,ro2_reject:10.7,uf3_pin:18,uf3_pout:16},
+      {day:22, uf1_fcond:240.0,uf1_pcond:6.3,uf1_flow:70.1,  uf2_fcond:238.0,uf2_pcond:6.2,uf2_flow:69.9,  uf3_fcond:278.3,uf3_pcond:8.2,uf3_flow:70.5, ro1_pflow:37.7,ro1_fcond:278.3,ro1_pcond:8.2,ro2_pflow:35.9,ro2_fcond:224.3,ro2_pcond:8.4,ro3_pflow:50.9,ro3_fcond:316.1,ro3_pcond:6.8,ro1_arr1:160,ro1_arr2:100,ro2_arr1:220,ro2_arr2:190,ro3_arr1:120,ro3_arr2:110,ro1_reject:13.1,ro2_reject:10.7,uf3_pin:18,uf3_pout:16},
+      {day:23, uf1_fcond:310.0,uf1_pcond:8.5,uf1_flow:70.0,  uf2_fcond:305.0,uf2_pcond:8.2,uf2_flow:69.8,  uf3_fcond:850.8,uf3_pcond:11.9,uf3_flow:70.5, ro1_pflow:38.5,ro1_fcond:850.8,ro1_pcond:11.9,ro2_pflow:36.0,ro2_fcond:380.2,ro2_pcond:11.5,ro3_pflow:50.2,ro3_fcond:467.9,ro3_pcond:9.2,ro1_arr1:150,ro1_arr2:130,ro2_arr1:220,ro2_arr2:190,ro3_arr1:120,ro3_arr2:110,ro1_reject:13.2,ro2_reject:13.5,uf3_pin:18,uf3_pout:16},
+      {day:24, uf1_fcond:252.0,uf1_pcond:6.6,uf1_flow:70.3,  uf2_fcond:248.0,uf2_pcond:6.5,uf2_flow:70.0,  uf3_fcond:320.1,uf3_pcond:9.4,uf3_flow:71.2, ro1_pflow:38.1,ro1_fcond:320.1,ro1_pcond:9.4,ro2_pflow:37.2,ro2_fcond:255.1,ro2_pcond:9.6,ro3_pflow:50.4,ro3_fcond:411.2,ro3_pcond:6.5,ro1_arr1:160,ro1_arr2:100,ro2_arr1:220,ro2_arr2:190,ro3_arr1:120,ro3_arr2:110,ro1_reject:10.3,ro2_reject:13.6,uf3_pin:18,uf3_pout:16},
+    ]
+  }
+};
 
-// ═══════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════
-const labels = () => DATA.map(d => d.date);
-const SR = (f,p) => f>0 ? +((1-p/f)*100).toFixed(2) : 0;
-const srStatus = v => v>=95?'ok':v>=90?'warn':'danger';
+// ── Current selection ──
+let curYear = 2569;
+let curMonth = 3;
+let selectedDay = 0;
+
+// ── Get data for current period ──
+function DATA() {
+  if (!ALL_DATA[curYear]) ALL_DATA[curYear] = {};
+  if (!ALL_DATA[curYear][curMonth]) ALL_DATA[curYear][curMonth] = [];
+  return ALL_DATA[curYear][curMonth];
+}
+
+// ── Month/Year helpers ──
+const MONTH_TH = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+function getAvailableYears() {
+  return Object.keys(ALL_DATA).map(Number).sort((a,b)=>a-b);
+}
+function getDateStr(day) {
+  return `${day}/${curMonth}/${String(curYear).slice(-2)}`;
+}
+
+function initYearSelect() {
+  const sel = document.getElementById('sel-year');
+  sel.innerHTML = getAvailableYears().map(y=>`<option value="${y}" ${y===curYear?'selected':''}>${y}</option>`).join('');
+}
+
+function onPeriodChange() {
+  curYear = parseInt(document.getElementById('sel-year').value);
+  curMonth = parseInt(document.getElementById('sel-month').value);
+  selectedDay = 0;
+  buildAll();
+}
+
+function addNewMonth() {
+  const y = parseInt(prompt('ปี พ.ศ. ที่ต้องการเพิ่ม (เช่น 2569):', curYear));
+  const m = parseInt(prompt('เดือนที่ต้องการเพิ่ม (1-12):', curMonth));
+  if (isNaN(y)||isNaN(m)||m<1||m>12) { alert('ข้อมูลไม่ถูกต้อง'); return; }
+  if (!ALL_DATA[y]) ALL_DATA[y]={};
+  if (ALL_DATA[y][m] && ALL_DATA[y][m].length>0) { alert(`มีข้อมูล ${MONTH_TH[m]} ${y} อยู่แล้ว`); return; }
+  ALL_DATA[y][m] = [];
+  curYear = y; curMonth = m; selectedDay = 0;
+  initYearSelect();
+  document.getElementById('sel-year').value = y;
+  document.getElementById('sel-month').value = m;
+  buildAll();
+  showToast(`✅ เพิ่มเดือน ${MONTH_TH[m]} ${y} สำเร็จ — กรุณาเพิ่มข้อมูลรายวัน`);
+}
+
+function deleteCurrentMonth() {
+  if (!confirm(`ยืนยันลบข้อมูลทั้งหมดของ ${MONTH_TH[curMonth]} ${curYear}?`)) return;
+  if (ALL_DATA[curYear]) delete ALL_DATA[curYear][curMonth];
+  buildAll();
+  showToast('🗑 ลบข้อมูลเดือนนั้นแล้ว');
+}
+
+// ── Helpers ──
+const SR  = (f,p) => f>0 ? +((1-p/f)*100).toFixed(2) : 0;
+const srStatus   = v => v>=95?'ok':v>=90?'warn':'danger';
 const condStatus = v => v<85?'ok':v<100?'warn':'danger';
-const fv = v => typeof v==='number' ? v : 0;
+const fv  = v => typeof v==='number' ? v : 0;
+const labels = () => DATA().map(d=>getDateStr(d.day));
 
 Chart.defaults.font.family = "'IBM Plex Mono',monospace";
 Chart.defaults.font.size = 11;
@@ -470,6 +744,7 @@ const C = {
   rose:{line:'#f43f5e',fill:'rgba(244,63,94,.08)'},
   green:{line:'#10b981',fill:'rgba(16,185,129,.08)'},
   orange:{line:'#f97316',fill:'rgba(249,115,22,.08)'},
+  cyan:{line:'#06b6d4',fill:'rgba(6,182,212,.08)'},
 };
 
 function lineDS(label, data, color, dash=[]) {
@@ -479,24 +754,8 @@ function lineDS(label, data, color, dash=[]) {
 function stdDS(label,val,n,color='rose') {
   return {label,data:Array(n).fill(val),borderColor:C[color].line,borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false,tension:0};
 }
-
-// ── Membrane annotation plugin ──
-function membraneAnnotation() {
-  const idx = DATA.findIndex(d => d.date === MEMBRANE_DATE);
-  if (idx < 0) return {};
-  return {
-    annotation: {
-      annotations: {
-        membrane: {
-          type:'line', xMin:idx, xMax:idx,
-          borderColor:'#f97316', borderWidth:2, borderDash:[8,4],
-          label:{content:'🔧 เปลี่ยน Membrane',display:true,position:'start',
-            backgroundColor:'rgba(249,115,22,.12)',color:'#c2410c',
-            font:{size:10,weight:'bold'},padding:{x:6,y:3},borderRadius:4}
-        }
-      }
-    }
-  };
+function barDS(label,data,colorArr) {
+  return {label,data,backgroundColor:colorArr,borderRadius:5,borderSkipped:false};
 }
 
 const charts = {};
@@ -508,14 +767,12 @@ function makeChart(id, type, datasets, opts) {
 }
 
 function chartOpts(yLabel='', yMin=null, yMax=null) {
-  const ann = membraneAnnotation();
   return {
     responsive:true, maintainAspectRatio:false,
     interaction:{mode:'index',intersect:false},
     plugins:{
       legend:{position:'top',labels:{boxWidth:10,padding:12,font:{size:11}}},
       tooltip:{backgroundColor:'#0f1923',titleColor:'#fff',bodyColor:'#c4cdd8',padding:10,cornerRadius:8},
-      ...ann,
     },
     scales:{
       x:{grid:{color:'#f0f2f6'},ticks:{maxRotation:45,font:{size:10}}},
@@ -528,57 +785,124 @@ function chartOpts(yLabel='', yMin=null, yMax=null) {
   };
 }
 
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  BUILD ALL
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 function buildAll() {
-  const n = DATA.length;
-  const sr1=DATA.map(d=>SR(d.ro1_fcond,d.ro1_pcond));
-  const sr2=DATA.map(d=>SR(d.ro2_fcond,d.ro2_pcond));
-  const sr3=DATA.map(d=>SR(d.ro3_fcond,d.ro3_pcond));
+  const d = DATA();
+  const n = d.length;
+  document.getElementById('record-count').textContent = `${n} วันที่บันทึก | ${MONTH_TH[curMonth]} ${curYear}`;
+  const fml = document.getElementById('form-month-label');
+  if (fml) fml.textContent = `${MONTH_TH[curMonth]} ${curYear}`;
+  formSelectedDay = null;
+  const badge = document.getElementById('form-day-badge');
+  if (badge) badge.textContent = '—';
+  buildDayPicker();
 
-  // OVERVIEW
+  if (n === 0) {
+    // show empty state
+    ['co-sr','co-cond','co-ufflow','co-roflow',
+     'uf1-sr','uf1-cond','uf1-flow','uf2-sr','uf2-cond','uf2-flow',
+     'uf3-sr','uf3-cond','uf3-flow','uf-sr-compare','uf-flow-compare',
+     'sr-ro1','sr-ro2','sr-ro3','sr-all',
+     'cd-ro1','cd-ro2','cd-ro3','cd-compare',
+     'fl-ro12','fl-ro3','fl-uf-all','fl-reject'].forEach(id=>{
+      if(charts[id]) { charts[id].destroy(); delete charts[id]; }
+    });
+    document.getElementById('kpi-overview').innerHTML = '<div class="no-data" style="grid-column:1/-1">ยังไม่มีข้อมูลสำหรับเดือนนี้ — ไปที่แท็บ ✏️ เพิ่มข้อมูล</div>';
+    document.getElementById('kpi-uf').innerHTML = '';
+    document.getElementById('kpi-sr').innerHTML = '';
+    document.getElementById('sr-tbody').innerHTML = '';
+    document.getElementById('edit-tbody').innerHTML = '';
+    document.getElementById('day-btns').innerHTML = '';
+    document.getElementById('daily-content').innerHTML = '<div class="no-data">ยังไม่มีข้อมูล</div>';
+    ['uf1-tbody','uf2-tbody','uf3-tbody'].forEach(id=>document.getElementById(id).innerHTML='');
+    return;
+  }
+
+  const sr1=d.map(r=>SR(r.ro1_fcond,r.ro1_pcond));
+  const sr2=d.map(r=>SR(r.ro2_fcond,r.ro2_pcond));
+  const sr3=d.map(r=>SR(r.ro3_fcond,r.ro3_pcond));
+  const uf1sr=d.map(r=>SR(r.uf1_fcond,r.uf1_pcond));
+  const uf2sr=d.map(r=>SR(r.uf2_fcond,r.uf2_pcond));
+  const uf3sr=d.map(r=>SR(r.uf3_fcond,r.uf3_pcond));
+
+  // ── OVERVIEW ──
   makeChart('co-sr','line',[lineDS('RO#1',sr1,'blue'),lineDS('RO#2',sr2,'teal'),lineDS('RO#3',sr3,'violet'),stdDS('STD 95%',95,n)],chartOpts('%SR',80,100));
-  makeChart('co-cond','line',[lineDS('RO#1',DATA.map(d=>d.ro1_pcond),'blue'),lineDS('RO#2',DATA.map(d=>d.ro2_pcond),'teal'),lineDS('RO#3',DATA.map(d=>d.ro3_pcond),'violet'),stdDS('STD 85',85,n)],chartOpts('μS/cm',0,100));
-  makeChart('co-fcond','line',[lineDS('RO#1',DATA.map(d=>d.ro1_fcond),'blue'),lineDS('RO#2',DATA.map(d=>d.ro2_fcond),'teal'),lineDS('RO#3',DATA.map(d=>d.ro3_fcond),'violet')],chartOpts('μS/cm'));
-  makeChart('co-ufflow','bar',[{label:'UF#3 Flow',data:DATA.map(d=>d.uf3_flow),backgroundColor:DATA.map(d=>d.uf3_flow>70?'rgba(244,63,94,.7)':'rgba(0,180,160,.7)'),borderRadius:5,borderSkipped:false},stdDS('STD 70',70,n,'amber')],chartOpts('m³/hr',68,74));
+  makeChart('co-cond','line',[lineDS('RO#1',d.map(r=>r.ro1_pcond),'blue'),lineDS('RO#2',d.map(r=>r.ro2_pcond),'teal'),lineDS('RO#3',d.map(r=>r.ro3_pcond),'violet'),stdDS('STD 85',85,n)],chartOpts('μS/cm',0,100));
+  makeChart('co-ufflow','line',[lineDS('UF#1',d.map(r=>r.uf1_flow),'cyan'),lineDS('UF#2',d.map(r=>r.uf2_flow),'orange'),lineDS('UF#3',d.map(r=>r.uf3_flow),'amber'),stdDS('STD 70',70,n,'rose')],chartOpts('m³/hr',60,76));
+  makeChart('co-roflow','line',[lineDS('RO#1',d.map(r=>r.ro1_pflow),'blue'),lineDS('RO#2',d.map(r=>r.ro2_pflow),'teal'),stdDS('STD 40',40,n,'rose'),stdDS('STD 35',35,n,'amber')],chartOpts('m³/hr',28,45));
 
-  // SALT REJ
+  // ── UF CHARTS ──
+  // UF#1
+  makeChart('uf1-sr','line',[lineDS('UF#1 %SR',uf1sr,'cyan'),stdDS('STD 95%',95,n)],chartOpts('%SR',85,100));
+  makeChart('uf1-cond','line',[lineDS('Feed',d.map(r=>r.uf1_fcond),'rose'),lineDS('Product',d.map(r=>r.uf1_pcond),'cyan'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
+  makeChart('uf1-flow','bar',[barDS('UF#1 Flow',d.map(r=>r.uf1_flow),d.map(r=>r.uf1_flow>70?'rgba(244,63,94,.7)':'rgba(6,182,212,.7)')),stdDS('STD 70',70,n,'rose')],chartOpts('m³/hr',60,76));
+  // UF#2
+  makeChart('uf2-sr','line',[lineDS('UF#2 %SR',uf2sr,'orange'),stdDS('STD 95%',95,n)],chartOpts('%SR',85,100));
+  makeChart('uf2-cond','line',[lineDS('Feed',d.map(r=>r.uf2_fcond),'rose'),lineDS('Product',d.map(r=>r.uf2_pcond),'orange'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
+  makeChart('uf2-flow','bar',[barDS('UF#2 Flow',d.map(r=>r.uf2_flow),d.map(r=>r.uf2_flow>70?'rgba(244,63,94,.7)':'rgba(249,115,22,.7)')),stdDS('STD 70',70,n,'rose')],chartOpts('m³/hr',60,76));
+  // UF#3
+  makeChart('uf3-sr','line',[lineDS('UF#3 %SR',uf3sr,'amber'),stdDS('STD 95%',95,n)],chartOpts('%SR',85,100));
+  makeChart('uf3-cond','line',[lineDS('Feed',d.map(r=>r.uf3_fcond),'rose'),lineDS('Product',d.map(r=>r.uf3_pcond),'amber'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
+  makeChart('uf3-flow','bar',[barDS('UF#3 Flow',d.map(r=>r.uf3_flow),d.map(r=>r.uf3_flow>70?'rgba(244,63,94,.7)':'rgba(245,158,11,.7)')),stdDS('STD 70',70,n,'rose')],chartOpts('m³/hr',60,76));
+  // Compare
+  makeChart('uf-sr-compare','line',[lineDS('UF#1',uf1sr,'cyan'),lineDS('UF#2',uf2sr,'orange'),lineDS('UF#3',uf3sr,'amber'),stdDS('STD 95%',95,n)],chartOpts('%SR',85,100));
+  makeChart('uf-flow-compare','line',[lineDS('UF#1',d.map(r=>r.uf1_flow),'cyan'),lineDS('UF#2',d.map(r=>r.uf2_flow),'orange'),lineDS('UF#3',d.map(r=>r.uf3_flow),'amber'),stdDS('STD 70',70,n,'rose')],chartOpts('m³/hr',60,76));
+
+  // UF tables
+  buildUFTable('uf1-tbody', r=>[r.uf1_fcond,r.uf1_pcond,SR(r.uf1_fcond,r.uf1_pcond),r.uf1_flow]);
+  buildUFTable('uf2-tbody', r=>[r.uf2_fcond,r.uf2_pcond,SR(r.uf2_fcond,r.uf2_pcond),r.uf2_flow]);
+  buildUFTable('uf3-tbody', r=>[r.uf3_fcond,r.uf3_pcond,SR(r.uf3_fcond,r.uf3_pcond),r.uf3_flow]);
+
+  // ── SALT REJ ──
   makeChart('sr-ro1','line',[lineDS('RO#1 %SR',sr1,'blue'),stdDS('STD 95%',95,n)],chartOpts('%SR',70,100));
   makeChart('sr-ro2','line',[lineDS('RO#2 %SR',sr2,'teal'),stdDS('STD 95%',95,n)],chartOpts('%SR',90,100));
   makeChart('sr-ro3','line',[lineDS('RO#3 %SR',sr3,'violet'),stdDS('STD 95%',95,n)],chartOpts('%SR',70,100));
   makeChart('sr-all','line',[lineDS('RO#1',sr1,'blue'),lineDS('RO#2',sr2,'teal'),lineDS('RO#3',sr3,'violet'),stdDS('STD 95%',95,n)],chartOpts('%SR',70,100));
 
-  // CONDUCTIVITY
-  makeChart('cd-ro1','line',[lineDS('Feed',DATA.map(d=>d.ro1_fcond),'rose'),lineDS('Prod',DATA.map(d=>d.ro1_pcond),'blue'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
-  makeChart('cd-ro2','line',[lineDS('Feed',DATA.map(d=>d.ro2_fcond),'amber'),lineDS('Prod',DATA.map(d=>d.ro2_pcond),'teal'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
-  makeChart('cd-ro3','line',[lineDS('Feed',DATA.map(d=>d.ro3_fcond),'rose'),lineDS('Prod',DATA.map(d=>d.ro3_pcond),'violet'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
-  makeChart('cd-compare','line',[lineDS('RO#1 Prod',DATA.map(d=>d.ro1_pcond),'blue'),lineDS('RO#2 Prod',DATA.map(d=>d.ro2_pcond),'teal'),lineDS('RO#3 Prod',DATA.map(d=>d.ro3_pcond),'violet'),stdDS('STD 85',85,n)],chartOpts('μS/cm',0,110));
+  // ── CONDUCTIVITY ──
+  makeChart('cd-ro1','line',[lineDS('Feed',d.map(r=>r.ro1_fcond),'rose'),lineDS('Prod',d.map(r=>r.ro1_pcond),'blue'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
+  makeChart('cd-ro2','line',[lineDS('Feed',d.map(r=>r.ro2_fcond),'amber'),lineDS('Prod',d.map(r=>r.ro2_pcond),'teal'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
+  makeChart('cd-ro3','line',[lineDS('Feed',d.map(r=>r.ro3_fcond),'rose'),lineDS('Prod',d.map(r=>r.ro3_pcond),'violet'),stdDS('STD 85',85,n)],chartOpts('μS/cm'));
+  makeChart('cd-compare','line',[lineDS('RO#1',d.map(r=>r.ro1_pcond),'blue'),lineDS('RO#2',d.map(r=>r.ro2_pcond),'teal'),lineDS('RO#3',d.map(r=>r.ro3_pcond),'violet'),stdDS('STD 85',85,n)],chartOpts('μS/cm',0,110));
 
-  // FLOW
-  makeChart('fl-ro12','line',[lineDS('RO#1',DATA.map(d=>d.ro1_pflow),'blue'),lineDS('RO#2',DATA.map(d=>d.ro2_pflow),'teal'),stdDS('STD 40',40,n,'rose'),stdDS('STD 35',35,n,'amber')],chartOpts('m³/hr',28,45));
-  makeChart('fl-ro3','line',[lineDS('RO#3 Prod',DATA.map(d=>d.ro3_pflow),'violet')],chartOpts('m³/hr',44,56));
-  makeChart('fl-uf','bar',[{label:'UF#3',data:DATA.map(d=>d.uf3_flow),backgroundColor:DATA.map(d=>d.uf3_flow>70?'rgba(244,63,94,.7)':'rgba(26,110,245,.7)'),borderRadius:5,borderSkipped:false}],chartOpts('m³/hr',68,74));
-  makeChart('fl-reject','line',[lineDS('RO#1 Reject',DATA.map(d=>d.ro1_reject),'rose'),lineDS('RO#2 Reject',DATA.map(d=>d.ro2_reject),'amber'),stdDS('STD 15',15,n,'rose'),stdDS('STD 13',13,n,'amber')],chartOpts('m³/hr',8,18));
-
-  // PRESSURE
-  makeChart('pr-ro1','line',[lineDS('Arr1 In',DATA.map(d=>d.ro1_arr1),'blue'),lineDS('Arr2 In',DATA.map(d=>d.ro1_arr2),'teal'),stdDS('160',160,n,'rose'),stdDS('100',100,n,'amber')],chartOpts('psi',80,200));
-  makeChart('pr-ro2','line',[lineDS('Arr1 In',DATA.map(d=>d.ro2_arr1),'teal'),lineDS('Arr2 In',DATA.map(d=>d.ro2_arr2),'violet'),stdDS('160',160,n,'rose'),stdDS('80',80,n,'amber')],chartOpts('psi',60,250));
-  makeChart('pr-ro3','line',[lineDS('Arr1 In',DATA.map(d=>d.ro3_arr1),'violet'),lineDS('Arr2 In',DATA.map(d=>d.ro3_arr2),'amber'),stdDS('160',160,n,'rose'),stdDS('80',80,n,'amber')],chartOpts('psi',60,180));
-  makeChart('pr-uf','line',[lineDS('PreF Inlet',DATA.map(d=>d.uf3_pin),'amber'),lineDS('PreF Outlet',DATA.map(d=>d.uf3_pout),'blue'),stdDS('STD 25',25,n,'rose'),stdDS('STD 10',10,n,'amber')],chartOpts('psi',4,30));
+  // ── FLOW ──
+  makeChart('fl-ro12','line',[lineDS('RO#1',d.map(r=>r.ro1_pflow),'blue'),lineDS('RO#2',d.map(r=>r.ro2_pflow),'teal'),stdDS('STD 40',40,n,'rose'),stdDS('STD 35',35,n,'amber')],chartOpts('m³/hr',28,45));
+  makeChart('fl-ro3','line',[lineDS('RO#3',d.map(r=>r.ro3_pflow),'violet')],chartOpts('m³/hr',44,56));
+  makeChart('fl-uf-all','line',[lineDS('UF#1',d.map(r=>r.uf1_flow),'cyan'),lineDS('UF#2',d.map(r=>r.uf2_flow),'orange'),lineDS('UF#3',d.map(r=>r.uf3_flow),'amber'),stdDS('STD 70',70,n,'rose')],chartOpts('m³/hr',60,76));
+  makeChart('fl-reject','line',[lineDS('RO#1',d.map(r=>r.ro1_reject||0),'rose'),lineDS('RO#2',d.map(r=>r.ro2_reject||0),'amber'),stdDS('STD 15',15,n,'rose'),stdDS('STD 13',13,n,'amber')],chartOpts('m³/hr',8,18));
 
   buildKPI();
+  buildUFKPI();
   buildSRKPI();
   buildSRTable();
   buildEditTable();
   buildDayButtons();
+  if (DATA().length > 0) {
+    selectedDay = Math.min(selectedDay, DATA().length-1);
+    renderDailyDetail(selectedDay);
+  } else {
+    document.getElementById('daily-content').innerHTML = '<div class="no-data">ยังไม่มีข้อมูล</div>';
+  }
 }
 
-// ═══════════════════════════════════════════
-//  KPI OVERVIEW
-// ═══════════════════════════════════════════
+function buildUFTable(tbodyId, getter) {
+  const d = DATA();
+  document.getElementById(tbodyId).innerHTML = d.map(r=>{
+    const [fc,pc,sr,fl] = getter(r);
+    const s = srStatus(sr);
+    return `<tr><td class="datecol">${getDateStr(r.day)}${r.membrane_change?' 🔧':''}</td>
+      <td>${fv(fc).toFixed(1)}</td><td>${fv(pc).toFixed(1)}</td>
+      <td><span class="sbadge ${s}">${sr.toFixed(2)}%</span></td>
+      <td>${fv(fl).toFixed(1)}</td></tr>`;
+  }).join('');
+}
+
 function buildKPI() {
-  const last = DATA[DATA.length-1];
+  const d = DATA();
+  if (!d.length) return;
+  const last = d[d.length-1];
   const s1=SR(last.ro1_fcond,last.ro1_pcond), s2=SR(last.ro2_fcond,last.ro2_pcond), s3=SR(last.ro3_fcond,last.ro3_pcond);
   const cards=[
     {l:'RO#1 Salt Rejection',v:s1.toFixed(1),u:'%',c:'blue',st:srStatus(s1),std:'STD ≥ 95%'},
@@ -586,10 +910,9 @@ function buildKPI() {
     {l:'RO#3 Salt Rejection',v:s3.toFixed(1),u:'%',c:'violet',st:srStatus(s3),std:'STD ≥ 95%'},
     {l:'RO#1 Prod Cond',v:last.ro1_pcond,u:'μS/cm',c:'blue',st:condStatus(last.ro1_pcond),std:'STD < 85'},
     {l:'RO#2 Prod Cond',v:last.ro2_pcond,u:'μS/cm',c:'teal',st:condStatus(last.ro2_pcond),std:'STD < 85'},
-    {l:'RO#3 Prod Cond',v:last.ro3_pcond,u:'μS/cm',c:'violet',st:condStatus(last.ro3_pcond),std:'STD < 85'},
-    {l:'UF#3 Flow',v:last.uf3_flow,u:'m³/hr',c:'amber',st:last.uf3_flow<=70?'ok':'warn',std:'STD ≤ 70'},
-    {l:'RO#1 Prod Flow',v:last.ro1_pflow,u:'m³/hr',c:'blue',st:(last.ro1_pflow>=35&&last.ro1_pflow<=40)?'ok':'warn',std:'STD 35–40'},
-    {l:'RO#2 Prod Flow',v:last.ro2_pflow,u:'m³/hr',c:'teal',st:(last.ro2_pflow>=35&&last.ro2_pflow<=40)?'ok':'warn',std:'STD 35–40'},
+    {l:'UF#1 Flow',v:fv(last.uf1_flow).toFixed(1),u:'m³/hr',c:'cyan',st:last.uf1_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    {l:'UF#2 Flow',v:fv(last.uf2_flow).toFixed(1),u:'m³/hr',c:'orange',st:last.uf2_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    {l:'UF#3 Flow',v:fv(last.uf3_flow).toFixed(1),u:'m³/hr',c:'amber',st:last.uf3_flow<=70?'ok':'warn',std:'STD ≤ 70'},
   ];
   document.getElementById('kpi-overview').innerHTML = cards.map(k=>`
     <div class="kpi-card ${k.c}">
@@ -602,13 +925,41 @@ function buildKPI() {
     </div>`).join('');
 }
 
-// ═══════════════════════════════════════════
-//  SALT REJECTION KPI + TABLE
-// ═══════════════════════════════════════════
+function buildUFKPI() {
+  const d = DATA();
+  if (!d.length) { document.getElementById('kpi-uf').innerHTML=''; return; }
+  const last = d[d.length-1];
+  const uf1s=SR(last.uf1_fcond,last.uf1_pcond);
+  const uf2s=SR(last.uf2_fcond,last.uf2_pcond);
+  const uf3s=SR(last.uf3_fcond,last.uf3_pcond);
+  const cards=[
+    {l:'UF#1 Salt Reject',v:uf1s.toFixed(2),u:'%',c:'cyan',st:srStatus(uf1s),std:'STD ≥ 95%'},
+    {l:'UF#1 Prod Cond',v:fv(last.uf1_pcond).toFixed(1),u:'μS/cm',c:'cyan',st:condStatus(last.uf1_pcond),std:'STD < 85'},
+    {l:'UF#1 Flow',v:fv(last.uf1_flow).toFixed(1),u:'m³/hr',c:'cyan',st:last.uf1_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    {l:'UF#2 Salt Reject',v:uf2s.toFixed(2),u:'%',c:'orange',st:srStatus(uf2s),std:'STD ≥ 95%'},
+    {l:'UF#2 Prod Cond',v:fv(last.uf2_pcond).toFixed(1),u:'μS/cm',c:'orange',st:condStatus(last.uf2_pcond),std:'STD < 85'},
+    {l:'UF#2 Flow',v:fv(last.uf2_flow).toFixed(1),u:'m³/hr',c:'orange',st:last.uf2_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    {l:'UF#3 Salt Reject',v:uf3s.toFixed(2),u:'%',c:'amber',st:srStatus(uf3s),std:'STD ≥ 95%'},
+    {l:'UF#3 Prod Cond',v:fv(last.uf3_pcond).toFixed(1),u:'μS/cm',c:'amber',st:condStatus(last.uf3_pcond),std:'STD < 85'},
+    {l:'UF#3 Flow',v:fv(last.uf3_flow).toFixed(1),u:'m³/hr',c:'amber',st:last.uf3_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+  ];
+  document.getElementById('kpi-uf').innerHTML = cards.map(k=>`
+    <div class="kpi-card ${k.c}">
+      <div class="kpi-label">${k.l}</div>
+      <div class="kpi-value">${k.v}<span class="kpi-unit">${k.u}</span></div>
+      <div class="kpi-sub">
+        <span class="sbadge ${k.st}"><span class="sdot"></span>${k.st==='ok'?'ปกติ':k.st==='warn'?'ระวัง':'เกิน STD'}</span>
+        <span style="margin-left:7px;font-size:10px;color:var(--text-muted)">${k.std}</span>
+      </div>
+    </div>`).join('');
+}
+
 function buildSRKPI() {
-  const a1=DATA.map(d=>SR(d.ro1_fcond,d.ro1_pcond));
-  const a2=DATA.map(d=>SR(d.ro2_fcond,d.ro2_pcond));
-  const a3=DATA.map(d=>SR(d.ro3_fcond,d.ro3_pcond));
+  const d = DATA();
+  if (!d.length) { document.getElementById('kpi-sr').innerHTML=''; return; }
+  const a1=d.map(r=>SR(r.ro1_fcond,r.ro1_pcond));
+  const a2=d.map(r=>SR(r.ro2_fcond,r.ro2_pcond));
+  const a3=d.map(r=>SR(r.ro3_fcond,r.ro3_pcond));
   const avg=a=>(a.reduce((s,v)=>s+v,0)/a.length).toFixed(2);
   const min=a=>Math.min(...a).toFixed(2);
   const cards=[
@@ -620,541 +971,93 @@ function buildSRKPI() {
     <div class="kpi-card ${k.c}">
       <div class="kpi-label">${k.l}</div>
       <div class="kpi-value">${k.v}<span class="kpi-unit">%</span></div>
-      <div class="kpi-sub"><span class="sbadge ${srStatus(parseFloat(k.v))}"><span class="sdot"></span>${srStatus(parseFloat(k.v))==='ok'?'ผ่าน STD':srStatus(parseFloat(k.v))==='warn'?'ระวัง':'ต่ำกว่า STD'}</span></div>
+      <div class="kpi-sub"><span class="sbadge ${srStatus(parseFloat(k.v))}"><span class="sdot"></span>${srStatus(parseFloat(k.v))==='ok'?'ผ่าน STD':'ต่ำกว่า STD'}</span></div>
     </div>`).join('');
 }
 
 function buildSRTable() {
-  document.getElementById('sr-tbody').innerHTML = DATA.map(d=>{
-    const s1=SR(d.ro1_fcond,d.ro1_pcond),s2=SR(d.ro2_fcond,d.ro2_pcond),s3=SR(d.ro3_fcond,d.ro3_pcond);
+  const d = DATA();
+  document.getElementById('sr-tbody').innerHTML = d.map(r=>{
+    const s1=SR(r.ro1_fcond,r.ro1_pcond),s2=SR(r.ro2_fcond,r.ro2_pcond),s3=SR(r.ro3_fcond,r.ro3_pcond);
     const b=v=>`<span class="sbadge ${srStatus(v)}">${v.toFixed(2)}%</span>`;
-    const mc=d.membrane_change?' style="background:#fff7ed"':'';
-    return `<tr${mc}><td class="datecol">${d.date}${d.membrane_change?' 🔧':''}</td>
-      <td>${fv(d.ro1_fcond).toFixed(1)}</td><td>${fv(d.ro1_pcond).toFixed(1)}</td><td>${b(s1)}</td>
-      <td>${fv(d.ro2_fcond).toFixed(1)}</td><td>${fv(d.ro2_pcond).toFixed(1)}</td><td>${b(s2)}</td>
-      <td>${fv(d.ro3_fcond).toFixed(1)}</td><td>${fv(d.ro3_pcond).toFixed(1)}</td><td>${b(s3)}</td>
+    const mc=r.membrane_change?' style="background:#fff7ed"':'';
+    return `<tr${mc}><td class="datecol">${getDateStr(r.day)}${r.membrane_change?' 🔧':''}</td>
+      <td>${fv(r.ro1_fcond).toFixed(1)}</td><td>${fv(r.ro1_pcond).toFixed(1)}</td><td>${b(s1)}</td>
+      <td>${fv(r.ro2_fcond).toFixed(1)}</td><td>${fv(r.ro2_pcond).toFixed(1)}</td><td>${b(s2)}</td>
+      <td>${fv(r.ro3_fcond).toFixed(1)}</td><td>${fv(r.ro3_pcond).toFixed(1)}</td><td>${b(s3)}</td>
     </tr>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════
-//  DAILY VIEW — with Range Mode
-// ═══════════════════════════════════════════
-let selectedDay = DATA.length - 1;
-let rangeMode = 'single';   // 'single' | 'range'
-let rangeStart = null;      // index
-let rangeEnd   = null;      // index
-let rangePicking = 'start'; // 'start' | 'end'
+// ══════════════════════════════════════════════════════
+//  FORM DAY PICKER
+// ══════════════════════════════════════════════════════
+let formSelectedDay = null;
 
-function setRangeMode(mode) {
-  rangeMode = mode;
-  document.getElementById('rtbtn-single').classList.toggle('active', mode==='single');
-  document.getElementById('rtbtn-range').classList.toggle('active', mode==='range');
-  if (mode==='single') {
-    rangeStart = rangeEnd = null;
-    document.getElementById('range-hint').textContent = 'กดปุ่มวันเดียว เพื่อดูข้อมูลวันนั้น';
-    document.getElementById('clear-range-btn').style.display = 'none';
-    buildDayButtons();
-    renderDailyDetail(selectedDay);
-  } else {
-    rangePicking = 'start';
-    rangeStart = rangeEnd = null;
-    document.getElementById('range-hint').textContent = '👆 กดวันเริ่มต้นก่อน';
-    document.getElementById('clear-range-btn').style.display = '';
-    buildDayButtons();
-    document.getElementById('daily-content').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">เลือกวันเริ่มต้นและวันสิ้นสุดเพื่อดูกราฟ</div>';
-  }
-}
-
-function clearRange() {
-  rangeStart = rangeEnd = null;
-  rangePicking = 'start';
-  document.getElementById('range-hint').textContent = '👆 กดวันเริ่มต้นก่อน';
-  buildDayButtons();
-  document.getElementById('daily-content').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">เลือกวันเริ่มต้นและวันสิ้นสุดเพื่อดูกราฟ</div>';
-}
-
-function updateRangeHint() {
-  const hint = document.getElementById('range-hint');
-  if (rangeStart === null) {
-    hint.textContent = '👆 กดวันเริ่มต้นก่อน';
-  } else if (rangeEnd === null) {
-    hint.innerHTML = `✅ เริ่ม: <strong>${DATA[rangeStart].date}</strong> — 👆 กดวันสิ้นสุด`;
-  } else {
-    hint.innerHTML = `📆 ช่วง: <strong>${DATA[rangeStart].date}</strong> — <strong>${DATA[rangeEnd].date}</strong>`;
-  }
-}
-
-function buildDayButtons() {
-  const wrap = document.getElementById('day-btns');
-  wrap.innerHTML = DATA.map((d,i)=>{
-    let cls = 'day-btn';
-    if (d.membrane_change) cls += ' membrane-day';
-    if (rangeMode === 'single') {
-      if (i === selectedDay) cls += ' active';
+function buildDayPicker() {
+  const d = DATA();
+  const takenDays = new Set(d.map(r=>r.day));
+  const wrap = document.getElementById('day-picker-wrap');
+  if (!wrap) return;
+  const daysInMonth = new Date(curYear, curMonth, 0).getDate();
+  let html = '';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const taken = takenDays.has(day);
+    const active = formSelectedDay === day;
+    if (taken) {
+      html += `<button onclick="pickerSelectDay(${day})" style="padding:6px 11px;border:1.5px solid #d1d5db;border-radius:8px;background:#f3f4f6;color:#9ca3af;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;position:relative" title="มีข้อมูลแล้ว — คลิกเพื่อเขียนทับ">${day}<span style="position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:var(--teal);border-radius:50%;border:1.5px solid #fff"></span></button>`;
     } else {
-      if (rangeStart !== null && rangeEnd !== null) {
-        const lo = Math.min(rangeStart, rangeEnd);
-        const hi = Math.max(rangeStart, rangeEnd);
-        if (i === lo) cls += ' range-start';
-        else if (i === hi) cls += ' range-end';
-        else if (i > lo && i < hi) cls += ' range-in';
-      } else if (i === rangeStart) {
-        cls += ' range-start';
-      }
+      html += `<button onclick="pickerSelectDay(${day})" style="padding:6px 11px;border:1.5px solid ${active?'var(--blue)':'var(--border)'};border-radius:8px;background:${active?'var(--blue)':'#fff'};color:${active?'#fff':'var(--text-primary)'};font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;box-shadow:${active?'0 2px 8px rgba(26,110,245,.3)':'none'}">${day}</button>`;
     }
-    return `<button class="${cls}" onclick="selectDay(${i},this)">${d.date}${d.membrane_change?' 🔧':''}</button>`;
-  }).join('');
-}
-
-function selectDay(i, btn) {
-  if (rangeMode === 'single') {
-    selectedDay = i;
-    document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderDailyDetail(i);
-    return;
   }
-  // Range mode
-  if (rangePicking === 'start' || rangeEnd !== null) {
-    // Start fresh or re-pick
-    rangeStart = i;
-    rangeEnd = null;
-    rangePicking = 'end';
-  } else {
-    // Picking end
-    if (i < rangeStart) {
-      // swap so start <= end
-      rangeEnd = rangeStart;
-      rangeStart = i;
-    } else {
-      rangeEnd = i;
-    }
-    rangePicking = 'start';
-  }
-  updateRangeHint();
-  buildDayButtons();
-  if (rangeStart !== null && rangeEnd !== null) {
-    renderRangeDetail(rangeStart, rangeEnd);
-  } else {
-    document.getElementById('daily-content').innerHTML = '<div style="padding:32px;text-align:center;color:var(--text-muted);font-size:13px">เลือกวันสิ้นสุดเพื่อดูกราฟ</div>';
-  }
-}
-function renderDailyDetail(i) {
-  const d = DATA[i];
-  const prev = i > 0 ? DATA[i-1] : null;
-  const s1=SR(d.ro1_fcond,d.ro1_pcond), s2=SR(d.ro2_fcond,d.ro2_pcond), s3=SR(d.ro3_fcond,d.ro3_pcond);
-
-  // Membrane note
-  document.getElementById('day-membrane-note').style.display = d.membrane_change ? 'flex' : 'none';
-
-  const delta=(curr,prv,key)=>{
-    if(!prv) return '';
-    const diff = (curr - prv[key]);
-    const sign = diff > 0 ? '+' : '';
-    return `<span style="font-size:10px;color:${diff<0?'var(--ok)':diff>0?'var(--danger)':'var(--text-muted)'}">${sign}${diff.toFixed(1)} vs วันก่อน</span>`;
-  };
-
-  const metrics = [
-    {label:'RO#1 Salt Rejection',val:s1.toFixed(2),unit:'%',status:srStatus(s1),std:'STD ≥ 95%',color:s1>=95?'#10b981':s1>=90?'#f59e0b':'#f43f5e'},
-    {label:'RO#2 Salt Rejection',val:s2.toFixed(2),unit:'%',status:srStatus(s2),std:'STD ≥ 95%',color:s2>=95?'#10b981':s2>=90?'#f59e0b':'#f43f5e'},
-    {label:'RO#3 Salt Rejection',val:s3.toFixed(2),unit:'%',status:srStatus(s3),std:'STD ≥ 95%',color:s3>=95?'#10b981':s3>=90?'#f59e0b':'#f43f5e'},
-    {label:'RO#1 Prod Cond',val:d.ro1_pcond,unit:'μS/cm',status:condStatus(d.ro1_pcond),std:'STD < 85',color:d.ro1_pcond<85?'#10b981':d.ro1_pcond<100?'#f59e0b':'#f43f5e',deltaKey:'ro1_pcond',deltaInverse:true},
-    {label:'RO#2 Prod Cond',val:d.ro2_pcond,unit:'μS/cm',status:condStatus(d.ro2_pcond),std:'STD < 85',color:d.ro2_pcond<85?'#10b981':d.ro2_pcond<100?'#f59e0b':'#f43f5e',deltaKey:'ro2_pcond',deltaInverse:true},
-    {label:'RO#3 Prod Cond',val:d.ro3_pcond,unit:'μS/cm',status:condStatus(d.ro3_pcond),std:'STD < 85',color:d.ro3_pcond<85?'#10b981':d.ro3_pcond<100?'#f59e0b':'#f43f5e',deltaKey:'ro3_pcond',deltaInverse:true},
-    {label:'RO#1 Feed Cond',val:d.ro1_fcond,unit:'μS/cm',std:'น้ำเข้า RO#1',deltaKey:'ro1_fcond'},
-    {label:'RO#2 Feed Cond',val:d.ro2_fcond,unit:'μS/cm',std:'น้ำเข้า RO#2',deltaKey:'ro2_fcond'},
-    {label:'RO#3 Feed Cond',val:d.ro3_fcond,unit:'μS/cm',std:'น้ำเข้า RO#3',deltaKey:'ro3_fcond'},
-    {label:'RO#1 Prod Flow',val:d.ro1_pflow,unit:'m³/hr',status:(d.ro1_pflow>=35&&d.ro1_pflow<=40)?'ok':'warn',std:'STD 35–40'},
-    {label:'RO#2 Prod Flow',val:d.ro2_pflow,unit:'m³/hr',status:(d.ro2_pflow>=35&&d.ro2_pflow<=40)?'ok':'warn',std:'STD 35–40'},
-    {label:'RO#3 Prod Flow',val:d.ro3_pflow,unit:'m³/hr',std:'Target ≈ 50'},
-    {label:'UF#3 Flow',val:d.uf3_flow,unit:'m³/hr',status:d.uf3_flow<=70?'ok':'warn',std:'STD ≤ 70'},
-    {label:'RO#1 Reject Flow',val:d.ro1_reject,unit:'m³/hr',status:(d.ro1_reject>=13&&d.ro1_reject<=15)?'ok':'warn',std:'STD 13–15'},
-    {label:'RO#2 Reject Flow',val:d.ro2_reject,unit:'m³/hr',status:(d.ro2_reject>=13&&d.ro2_reject<=15)?'ok':'warn',std:'STD 13–15'},
-    {label:'RO#1 Arr1 Pressure',val:d.ro1_arr1,unit:'psi',std:'STD 100–160'},
-    {label:'RO#1 Arr2 Pressure',val:d.ro1_arr2,unit:'psi',std:'STD 80–140'},
-    {label:'RO#2 Arr1 Pressure',val:d.ro2_arr1,unit:'psi',std:'STD 100–160'},
-    {label:'UF#3 PreFilter In',val:d.uf3_pin,unit:'psi',std:'STD 10–25'},
-  ];
-
-  // Slice data up to selected day (inclusive) for trend line
-  const trend = DATA.slice(0, i+1);
-  const tLabels = trend.map(x=>x.date);
-  const mIdx = trend.findIndex(x=>x.membrane_change);
-  const memAnn = mIdx>=0 ? {annotation:{annotations:{membrane:{type:'line',xMin:mIdx,xMax:mIdx,borderColor:'#f97316',borderWidth:2,borderDash:[8,4],label:{content:'🔧 Membrane',display:true,position:'start',backgroundColor:'rgba(249,115,22,.1)',color:'#c2410c',font:{size:9,weight:'bold'},padding:{x:5,y:2},borderRadius:3}}}}} : {};
-
-  const tOpts = (yLabel,yMin,yMax) => ({
-    responsive:true, maintainAspectRatio:false,
-    interaction:{mode:'index',intersect:false},
-    plugins:{
-      legend:{position:'top',labels:{boxWidth:9,padding:10,font:{size:10}}},
-      tooltip:{backgroundColor:'#0f1923',titleColor:'#fff',bodyColor:'#c4cdd8',padding:8,cornerRadius:8},
-      ...memAnn,
-    },
-    scales:{
-      x:{grid:{color:'#f0f2f6'},ticks:{maxRotation:45,font:{size:9}}},
-      y:{grid:{color:'#f0f2f6'},title:{display:!!yLabel,text:yLabel,color:'#8e98a8',font:{size:10}},
-        ...(yMin!==null&&{min:yMin}),
-        ...(yMax!==null&&{max:yMax})
-      }
-    }
-  });
-
-  const tLine = (label,data,color,dash=[]) => ({
-    label, data,
-    borderColor:C[color].line, backgroundColor:C[color].fill,
-    borderWidth:2.2, borderDash:dash,
-    pointBackgroundColor:C[color].line,
-    pointRadius: trend.map((_,j)=>j===i?7:3),
-    pointHoverRadius:7, tension:.35, fill:dash.length===0,
-  });
-  const tStd = (label,val,color='rose') => ({
-    label, data:Array(trend.length).fill(val),
-    borderColor:C[color].line, borderWidth:1.5, borderDash:[6,4],
-    pointRadius:0, fill:false, tension:0,
-  });
-
-  const html = `
-    <div style="margin-bottom:10px;padding:10px 0;font-size:12px;color:var(--text-secondary)">
-      ข้อมูลวันที่ <strong style="color:var(--text-primary);font-size:14px">${d.date}</strong>
-      ${prev?`<span style="margin-left:12px">เทียบกับ ${prev.date}</span>`:''}
-      <span style="margin-left:10px;font-size:10px;color:var(--text-muted)">● = วันที่เลือก</span>
-    </div>
-    <div class="day-detail-grid">
-      ${metrics.map(m=>`
-        <div class="day-metric" style="border-left:3px solid ${m.color||'var(--border)'}">
-          <div class="dm-label">${m.label}</div>
-          <div class="dm-val" style="color:${m.color||'var(--text-primary)'}">${m.val}<span class="dm-unit"> ${m.unit}</span></div>
-          <div class="dm-std">${m.status?`<span class="sbadge ${m.status}" style="font-size:10px"><span class="sdot"></span>${m.status==='ok'?'ปกติ':m.status==='warn'?'ระวัง':'เกิน STD'}</span>`:''} ${m.std||''}</div>
-          ${m.deltaKey&&prev?`<div style="margin-top:3px">${deltaMetric(d,prev,m.deltaKey,m.deltaInverse)}</div>`:''}
-        </div>`).join('')}
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="day-chart-card" style="grid-column:1/-1">
-        <div class="chart-title" style="margin-bottom:12px">% Salt Rejection — แนวโน้มถึงวันที่ ${d.date}</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="day-sr-chart"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Product Conductivity (μS/cm)</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="day-pcond-chart"></canvas></div>
-      </div>
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Feed Conductivity (μS/cm)</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="day-fcond-chart"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Product Flow Rate (m³/hr)</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="day-flow-chart"></canvas></div>
-      </div>
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Reject Flow Rate (m³/hr)</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="day-reject-chart"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Array Inlet Pressure — RO#1 &amp; RO#2 (psi)</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="day-press-chart"></canvas></div>
-      </div>
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">UF#3 Flow &amp; PreFilter Pressure</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="day-uf-chart"></canvas></div>
-      </div>
-    </div>`;
-
-  document.getElementById('daily-content').innerHTML = html;
-
-  setTimeout(()=>{
-    const s1arr=trend.map(x=>SR(x.ro1_fcond,x.ro1_pcond));
-    const s2arr=trend.map(x=>SR(x.ro2_fcond,x.ro2_pcond));
-    const s3arr=trend.map(x=>SR(x.ro3_fcond,x.ro3_pcond));
-
-    // 1. Salt Rejection line
-    new Chart(document.getElementById('day-sr-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('RO#1 %SR',s1arr,'blue'), tLine('RO#2 %SR',s2arr,'teal'), tLine('RO#3 %SR',s3arr,'violet'),
-        tStd('STD 95%',95),
-      ]},
-      options:tOpts('%SR',75,100)
-    });
-
-    // 2. Product Conductivity
-    new Chart(document.getElementById('day-pcond-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('RO#1',trend.map(x=>x.ro1_pcond),'blue'),
-        tLine('RO#2',trend.map(x=>x.ro2_pcond),'teal'),
-        tLine('RO#3',trend.map(x=>x.ro3_pcond),'violet'),
-        tStd('STD 85',85),
-      ]},
-      options:tOpts('μS/cm',0,null)
-    });
-
-    // 3. Feed Conductivity
-    new Chart(document.getElementById('day-fcond-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('RO#1',trend.map(x=>x.ro1_fcond),'blue'),
-        tLine('RO#2',trend.map(x=>x.ro2_fcond),'teal'),
-        tLine('RO#3',trend.map(x=>x.ro3_fcond),'violet'),
-      ]},
-      options:tOpts('μS/cm',null,null)
-    });
-
-    // 4. Product Flow
-    new Chart(document.getElementById('day-flow-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('RO#1',trend.map(x=>x.ro1_pflow),'blue'),
-        tLine('RO#2',trend.map(x=>x.ro2_pflow),'teal'),
-        tLine('RO#3',trend.map(x=>x.ro3_pflow),'violet'),
-        tLine('UF#3',trend.map(x=>x.uf3_flow),'amber'),
-      ]},
-      options:tOpts('m³/hr',25,80)
-    });
-
-    // 5. Reject Flow
-    new Chart(document.getElementById('day-reject-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('RO#1 Reject',trend.map(x=>x.ro1_reject),'rose'),
-        tLine('RO#2 Reject',trend.map(x=>x.ro2_reject),'amber'),
-        tStd('STD 15',15,'rose'), tStd('STD 13',13,'amber'),
-      ]},
-      options:tOpts('m³/hr',8,18)
-    });
-
-    // 6. Array Pressure
-    new Chart(document.getElementById('day-press-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('RO#1 Arr1',trend.map(x=>x.ro1_arr1),'blue'),
-        tLine('RO#1 Arr2',trend.map(x=>x.ro1_arr2),'teal'),
-        tLine('RO#2 Arr1',trend.map(x=>x.ro2_arr1),'violet'),
-        tLine('RO#2 Arr2',trend.map(x=>x.ro2_arr2),'amber'),
-      ]},
-      options:tOpts('psi',60,250)
-    });
-
-    // 7. UF#3
-    new Chart(document.getElementById('day-uf-chart'),{type:'line',
-      data:{labels:tLabels,datasets:[
-        tLine('UF#3 Flow',trend.map(x=>x.uf3_flow),'teal'),
-        tLine('PreFilter In',trend.map(x=>x.uf3_pin),'amber'),
-        tStd('STD Flow 70',70,'rose'),
-      ]},
-      options:tOpts('',null,null)
-    });
-
-  },50);
+  wrap.innerHTML = html;
 }
 
-function srColor(v){ return v>=95?'rgba(16,185,129,.75)':v>=90?'rgba(245,158,11,.75)':'rgba(244,63,94,.75)'; }
-
-function deltaMetric(d, prev, key, inverse=false) {
-  const diff = d[key] - prev[key];
-  if (Math.abs(diff) < 0.01) return '<span style="font-size:10px;color:var(--text-muted)">— ไม่เปลี่ยน</span>';
-  const good = inverse ? diff < 0 : diff > 0;
-  const sign = diff > 0 ? '+' : '';
-  return `<span style="font-size:10px;color:${good?'var(--ok)':'var(--danger)'}">${sign}${diff.toFixed(1)} vs วันก่อน</span>`;
+function pickerSelectDay(day) {
+  const d = DATA();
+  const taken = d.find(r=>r.day===day);
+  if (taken && !confirm(`วันที่ ${day} มีข้อมูลอยู่แล้ว ต้องการเขียนทับหรือไม่?`)) return;
+  formSelectedDay = day;
+  // Update badge
+  const badge = document.getElementById('form-day-badge');
+  if (badge) badge.textContent = String(day).padStart(2,'0');
+  buildDayPicker();
 }
 
-// ═══════════════════════════════════════════
-//  RANGE DETAIL VIEW
-// ═══════════════════════════════════════════
-function renderRangeDetail(startIdx, endIdx) {
-  const slice = DATA.slice(startIdx, endIdx + 1);
-  const rLabels = slice.map(x => x.date);
-  const mIdx = slice.findIndex(x => x.membrane_change);
-  const memAnn = mIdx >= 0 ? {annotation:{annotations:{membrane:{type:'line',xMin:mIdx,xMax:mIdx,
-    borderColor:'#f97316',borderWidth:2,borderDash:[8,4],
-    label:{content:'🔧 Membrane',display:true,position:'start',
-      backgroundColor:'rgba(249,115,22,.1)',color:'#c2410c',
-      font:{size:9,weight:'bold'},padding:{x:5,y:2},borderRadius:3}}}}} : {};
-
-  const rOpts = (yLabel, yMin, yMax) => ({
-    responsive:true, maintainAspectRatio:false,
-    interaction:{mode:'index',intersect:false},
-    plugins:{
-      legend:{position:'top',labels:{boxWidth:9,padding:10,font:{size:10}}},
-      tooltip:{backgroundColor:'#0f1923',titleColor:'#fff',bodyColor:'#c4cdd8',padding:8,cornerRadius:8},
-      ...memAnn,
-    },
-    scales:{
-      x:{grid:{color:'#f0f2f6'},ticks:{maxRotation:45,font:{size:10}}},
-      y:{grid:{color:'#f0f2f6'},
-        title:{display:!!yLabel,text:yLabel,color:'#8e98a8',font:{size:10}},
-        ...(yMin!==null&&{min:yMin}),
-        ...(yMax!==null&&{max:yMax})
-      }
-    }
-  });
-
-  const rLine = (label, data, color) => ({
-    label, data,
-    borderColor:C[color].line, backgroundColor:C[color].fill,
-    borderWidth:2.2, pointBackgroundColor:C[color].line,
-    pointRadius:4, pointHoverRadius:6, tension:.35, fill:true,
-  });
-  const rStd = (label, val, color='rose') => ({
-    label, data:Array(slice.length).fill(val),
-    borderColor:C[color].line, borderWidth:1.5, borderDash:[6,4],
-    pointRadius:0, fill:false, tension:0,
-  });
-
-  // Summary KPIs for range
-  const sr1arr = slice.map(d => SR(d.ro1_fcond, d.ro1_pcond));
-  const sr2arr = slice.map(d => SR(d.ro2_fcond, d.ro2_pcond));
-  const sr3arr = slice.map(d => SR(d.ro3_fcond, d.ro3_pcond));
-  const avg = a => (a.reduce((s,v)=>s+v,0)/a.length).toFixed(2);
-
-  const html = `
-    <div style="padding:10px 0 12px;font-size:12px;color:var(--text-secondary)">
-      แสดงข้อมูลช่วง <strong style="color:var(--blue);font-size:14px">${slice[0].date}</strong>
-      <span style="margin:0 6px">—</span>
-      <strong style="color:var(--blue);font-size:14px">${slice[slice.length-1].date}</strong>
-      <span style="margin-left:10px;color:var(--text-muted)">(${slice.length} วัน)</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px">
-      ${[
-        {l:'RO#1 SR เฉลี่ย',v:avg(sr1arr)+'%',c:'blue',st:srStatus(parseFloat(avg(sr1arr)))},
-        {l:'RO#2 SR เฉลี่ย',v:avg(sr2arr)+'%',c:'teal',st:srStatus(parseFloat(avg(sr2arr)))},
-        {l:'RO#3 SR เฉลี่ย',v:avg(sr3arr)+'%',c:'violet',st:srStatus(parseFloat(avg(sr3arr)))},
-        {l:'RO#1 ProdCond เฉลี่ย',v:(slice.reduce((s,d)=>s+d.ro1_pcond,0)/slice.length).toFixed(1)+' μS/cm',c:'blue',st:condStatus(slice.reduce((s,d)=>s+d.ro1_pcond,0)/slice.length)},
-        {l:'RO#2 ProdCond เฉลี่ย',v:(slice.reduce((s,d)=>s+d.ro2_pcond,0)/slice.length).toFixed(1)+' μS/cm',c:'teal',st:condStatus(slice.reduce((s,d)=>s+d.ro2_pcond,0)/slice.length)},
-        {l:'RO#3 ProdCond เฉลี่ย',v:(slice.reduce((s,d)=>s+d.ro3_pcond,0)/slice.length).toFixed(1)+' μS/cm',c:'violet',st:condStatus(slice.reduce((s,d)=>s+d.ro3_pcond,0)/slice.length)},
-      ].map(k=>`
-        <div class="kpi-card ${k.c}" style="padding:12px 16px">
-          <div class="kpi-label">${k.l}</div>
-          <div class="kpi-value" style="font-size:20px">${k.v}</div>
-          <div class="kpi-sub"><span class="sbadge ${k.st}"><span class="sdot"></span>${k.st==='ok'?'ปกติ':k.st==='warn'?'ระวัง':'เกิน STD'}</span></div>
-        </div>`).join('')}
-    </div>
-    <div style="display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">% Salt Rejection — ช่วง ${slice[0].date} ถึง ${slice[slice.length-1].date}</div>
-        <div class="chart-wrap" style="height:230px"><canvas id="rng-sr-chart"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Product Conductivity (μS/cm)</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="rng-pcond-chart"></canvas></div>
-      </div>
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Feed Conductivity (μS/cm)</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="rng-fcond-chart"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Product Flow Rate (m³/hr)</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="rng-flow-chart"></canvas></div>
-      </div>
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Reject Flow Rate (m³/hr)</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="rng-reject-chart"></canvas></div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">Array Inlet Pressure — RO#1 &amp; RO#2 (psi)</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="rng-press-chart"></canvas></div>
-      </div>
-      <div class="day-chart-card">
-        <div class="chart-title" style="margin-bottom:12px">UF#3 Flow &amp; PreFilter Pressure</div>
-        <div class="chart-wrap" style="height:210px"><canvas id="rng-uf-chart"></canvas></div>
-      </div>
-    </div>`;
-
-  document.getElementById('daily-content').innerHTML = html;
-
-  // Show membrane note if any in range
-  const hasMembrane = slice.some(d => d.membrane_change);
-  document.getElementById('day-membrane-note').style.display = hasMembrane ? 'flex' : 'none';
-
-  setTimeout(() => {
-    new Chart(document.getElementById('rng-sr-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('RO#1 %SR', sr1arr, 'blue'),
-        rLine('RO#2 %SR', sr2arr, 'teal'),
-        rLine('RO#3 %SR', sr3arr, 'violet'),
-        rStd('STD 95%', 95),
-      ]},
-      options: rOpts('%SR', 75, 100)
-    });
-    new Chart(document.getElementById('rng-pcond-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('RO#1', slice.map(x=>x.ro1_pcond), 'blue'),
-        rLine('RO#2', slice.map(x=>x.ro2_pcond), 'teal'),
-        rLine('RO#3', slice.map(x=>x.ro3_pcond), 'violet'),
-        rStd('STD 85', 85),
-      ]},
-      options: rOpts('μS/cm', 0, null)
-    });
-    new Chart(document.getElementById('rng-fcond-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('RO#1', slice.map(x=>x.ro1_fcond), 'blue'),
-        rLine('RO#2', slice.map(x=>x.ro2_fcond), 'teal'),
-        rLine('RO#3', slice.map(x=>x.ro3_fcond), 'violet'),
-      ]},
-      options: rOpts('μS/cm', null, null)
-    });
-    new Chart(document.getElementById('rng-flow-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('RO#1', slice.map(x=>x.ro1_pflow), 'blue'),
-        rLine('RO#2', slice.map(x=>x.ro2_pflow), 'teal'),
-        rLine('RO#3', slice.map(x=>x.ro3_pflow), 'violet'),
-        rLine('UF#3', slice.map(x=>x.uf3_flow), 'amber'),
-      ]},
-      options: rOpts('m³/hr', 25, 80)
-    });
-    new Chart(document.getElementById('rng-reject-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('RO#1 Reject', slice.map(x=>x.ro1_reject), 'rose'),
-        rLine('RO#2 Reject', slice.map(x=>x.ro2_reject), 'amber'),
-        rStd('STD 15', 15, 'rose'), rStd('STD 13', 13, 'amber'),
-      ]},
-      options: rOpts('m³/hr', 8, 18)
-    });
-    new Chart(document.getElementById('rng-press-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('RO#1 Arr1', slice.map(x=>x.ro1_arr1), 'blue'),
-        rLine('RO#1 Arr2', slice.map(x=>x.ro1_arr2), 'teal'),
-        rLine('RO#2 Arr1', slice.map(x=>x.ro2_arr1), 'violet'),
-        rLine('RO#2 Arr2', slice.map(x=>x.ro2_arr2), 'amber'),
-      ]},
-      options: rOpts('psi', 60, 250)
-    });
-    new Chart(document.getElementById('rng-uf-chart'), {type:'line',
-      data:{labels:rLabels, datasets:[
-        rLine('UF#3 Flow', slice.map(x=>x.uf3_flow), 'teal'),
-        rLine('PreFilter In', slice.map(x=>x.uf3_pin), 'amber'),
-        rStd('STD Flow 70', 70, 'rose'),
-      ]},
-      options: rOpts('', null, null)
-    });
-  }, 50);
+// ══════════════════════════════════════════════════════
+//  LIVE SR PREVIEW
+// ══════════════════════════════════════════════════════
+function calcSR(unit) {
+  const fcId = unit.startsWith('uf') ? `f-${unit}fc` : `f-${unit.replace('ro','r')}fc`;
+  const pcId = unit.startsWith('uf') ? `f-${unit}pc` : `f-${unit.replace('ro','r')}pc`;
+  const previewId = `sr-preview-${unit}`;
+  const fc = parseFloat(document.getElementById(fcId)?.value) || 0;
+  const pc = parseFloat(document.getElementById(pcId)?.value) || 0;
+  const el = document.getElementById(previewId);
+  if (!el) return;
+  if (fc <= 0 || pc <= 0) { el.textContent = '—'; el.style.color = '#8e98a8'; return; }
+  const sr = (1 - pc/fc) * 100;
+  el.textContent = sr.toFixed(1) + '%';
+  el.style.color = sr >= 95 ? '#10b981' : sr >= 90 ? '#f59e0b' : '#f43f5e';
 }
+const editFields = [
+  ['uf1fc','uf1_fcond'],['uf1pc','uf1_pcond'],['uf1fl','uf1_flow'],
+  ['uf2fc','uf2_fcond'],['uf2pc','uf2_pcond'],['uf2fl','uf2_flow'],
+  ['uf3fc','uf3_fcond'],['uf3pc','uf3_pcond'],['uf3fl','uf3_flow'],
+  ['r1fc','ro1_fcond'],['r1pc','ro1_pcond'],['r1pf','ro1_pflow'],
+  ['r2fc','ro2_fcond'],['r2pc','ro2_pcond'],['r2pf','ro2_pflow'],
+  ['r3fc','ro3_fcond'],['r3pc','ro3_pcond'],['r3pf','ro3_pflow'],
+];
 
-// ═══════════════════════════════════════════
-//  EDIT TABLE
-// ═══════════════════════════════════════════
 function buildEditTable() {
-  document.getElementById('edit-tbody').innerHTML = DATA.map((d,i)=>{
-    const mc = d.membrane_change ? ' style="background:#fff7ed"' : '';
+  const d = DATA();
+  document.getElementById('edit-tbody').innerHTML = d.map((r,i)=>{
+    const mc = r.membrane_change?' style="background:#fff7ed"':'';
     return `<tr id="erow-${i}"${mc}>
-      <td class="datecol">${d.date}${d.membrane_change?' 🔧':''}</td>
-      <td><span id="ev-uf3-${i}">${fv(d.uf3_flow)}</span></td>
-      <td><span id="ev-r1fc-${i}">${fv(d.ro1_fcond)}</span></td>
-      <td><span id="ev-r1pc-${i}">${fv(d.ro1_pcond)}</span></td>
-      <td><span id="ev-r1pf-${i}">${fv(d.ro1_pflow)}</span></td>
-      <td><span id="ev-r2fc-${i}">${fv(d.ro2_fcond)}</span></td>
-      <td><span id="ev-r2pc-${i}">${fv(d.ro2_pcond)}</span></td>
-      <td><span id="ev-r2pf-${i}">${fv(d.ro2_pflow)}</span></td>
-      <td><span id="ev-r3fc-${i}">${fv(d.ro3_fcond)}</span></td>
-      <td><span id="ev-r3pc-${i}">${fv(d.ro3_pcond)}</span></td>
-      <td><span id="ev-r3pf-${i}">${fv(d.ro3_pflow)}</span></td>
-      <td style="display:flex;gap:5px">
+      <td class="datecol">${getDateStr(r.day)}${r.membrane_change?' 🔧':''}</td>
+      ${editFields.map(([id,key])=>`<td id="ev-${id}-${i}">${fv(r[key]).toFixed(1)}</td>`).join('')}
+      <td style="font-size:11px;color:var(--text-muted);max-width:120px;overflow:hidden">${r.note||''}</td>
+      <td style="display:flex;gap:4px;padding:6px">
         <button class="ebtn" onclick="startEdit(${i})">✏️</button>
         <button class="dbtn" onclick="deleteRecord(${i})">🗑</button>
       </td>
@@ -1162,128 +1065,239 @@ function buildEditTable() {
   }).join('');
 }
 
-const editFields = [
-  ['uf3','uf3_flow'],['r1fc','ro1_fcond'],['r1pc','ro1_pcond'],['r1pf','ro1_pflow'],
-  ['r2fc','ro2_fcond'],['r2pc','ro2_pcond'],['r2pf','ro2_pflow'],
-  ['r3fc','ro3_fcond'],['r3pc','ro3_pcond'],['r3pf','ro3_pflow']
-];
-
 function startEdit(i) {
+  const d = DATA();
   editFields.forEach(([id,key])=>{
     const el = document.getElementById(`ev-${id}-${i}`);
-    el.outerHTML = `<input type="number" id="ev-${id}-${i}" value="${DATA[i][key]}" step="0.1">`;
+    if(el) el.outerHTML = `<input type="number" id="ev-${id}-${i}" value="${fv(d[i][key]).toFixed(1)}" step="0.1" style="width:64px;border:1.5px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px">`;
   });
   const td = document.querySelector(`#erow-${i} td:last-child`);
   td.innerHTML = `<button class="sbtn" onclick="saveEdit(${i})">💾</button>`;
 }
 
 function saveEdit(i) {
+  const d = DATA();
   editFields.forEach(([id,key])=>{
     const el = document.getElementById(`ev-${id}-${i}`);
-    if (el) DATA[i][key] = parseFloat(el.value)||0;
+    if (el) d[i][key] = parseFloat(el.value)||0;
   });
   buildAll();
   showToast('✅ บันทึกข้อมูลสำเร็จ');
 }
 
 function deleteRecord(i) {
-  if (!confirm(`ลบข้อมูลวันที่ ${DATA[i].date} ใช่หรือไม่?`)) return;
-  DATA.splice(i,1);
-  if (selectedDay >= DATA.length) selectedDay = DATA.length - 1;
+  const d = DATA();
+  if (!confirm(`ลบข้อมูลวันที่ ${getDateStr(d[i].day)} ใช่หรือไม่?`)) return;
+  d.splice(i,1);
+  selectedDay = Math.max(0, Math.min(selectedDay, d.length-1));
   buildAll();
   showToast('🗑 ลบข้อมูลแล้ว');
 }
 
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  ADD RECORD
-// ═══════════════════════════════════════════
-// ═══════════════════════════════════════════
-//  GOOGLE SHEETS INTEGRATION
-// ═══════════════════════════════════════════
-let APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_YIA5i9FNTHoIJRro343yWcnKCrIzlmP7oa4PBiscqI_OGhTMBaxRu5j4XVXML925/exec';
-
-async function loadFromSheets() {
-  if (!APPS_SCRIPT_URL) return;
-  showToast('⏳ กำลังโหลดข้อมูลจาก Google Sheets...');
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=get');
-    const rows = await res.json();
-    if (!Array.isArray(rows) || !rows.length) { showToast('✅ ไม่มีข้อมูลใหม่'); return; }
-    DATA = rows.map(r => ({
-      date: String(r[0]),
-      uf3_flow:+r[1]||0,
-      ro1_fcond:+r[2]||0, ro1_pcond:+r[3]||0, ro1_pflow:+r[5]||0, ro1_reject:+r[6]||0,
-      ro1_arr1:+r[7]||0,  ro1_arr2:+r[8]||0,
-      ro2_fcond:+r[9]||0, ro2_pcond:+r[10]||0, ro2_pflow:+r[12]||0, ro2_reject:+r[13]||0,
-      ro2_arr1:+r[14]||0, ro2_arr2:+r[15]||0,
-      ro3_fcond:+r[16]||0, ro3_pcond:+r[17]||0, ro3_pflow:+r[19]||0,
-      ro3_arr1:+r[20]||0, ro3_arr2:+r[21]||0,
-      uf3_pin:0, uf3_pout:0,
-      membrane_change: String(r[22]||'').includes('Membrane') || String(r[22]||'').includes('เมมเบรน'),
-    }));
-    buildAll();
-    showToast('✅ โหลดข้อมูลล่าสุดจาก Google Sheets สำเร็จ');
-  } catch(e) {
-    showToast('❌ เชื่อม Sheets ไม่ได้ — ตรวจสอบ URL และ Network');
-  }
-}
-
-async function addRecord() {
+// ══════════════════════════════════════════════════════
+function addRecord() {
   const g = id => parseFloat(document.getElementById(id).value) || 0;
-  const date = document.getElementById('f-date').value.trim();
-  if (!date) { alert('กรุณากรอกวันที่'); return; }
-  if (DATA.find(d=>d.date===date)) { alert(`มีข้อมูลวันที่ ${date} อยู่แล้ว`); return; }
-
-  const row = {
-    date, uf3_flow:g('f-uf3'),
-    ro1_fcond:g('f-r1fc'), ro1_pcond:g('f-r1pc'), ro1_pflow:g('f-r1pf'), ro1_reject:g('f-r1rj'),
-    ro1_arr1:g('f-r1a1'), ro1_arr2:g('f-r1a2'),
-    ro2_fcond:g('f-r2fc'), ro2_pcond:g('f-r2pc'), ro2_pflow:g('f-r2pf'), ro2_reject:g('f-r2rj'),
-    ro2_arr1:g('f-r2a1'), ro2_arr2:g('f-r2a2'),
-    ro3_fcond:g('f-r3fc'), ro3_pcond:g('f-r3pc'), ro3_pflow:g('f-r3pf'),
-    ro3_arr1:g('f-r3a1'), ro3_arr2:g('f-r3a2'),
-    uf3_pin:g('f-ufpin'), uf3_pout:g('f-ufpin')-2,
-  };
-
-  DATA.push(row);
-  buildAll();
-  clearForm();
-
-  if (!APPS_SCRIPT_URL) {
-    showToast(`✅ เพิ่มข้อมูล ${date} (ยังไม่ได้ตั้งค่า Sheets URL)`);
+  const day = formSelectedDay;
+  if (!day) {
+    const msg = document.getElementById('form-validation-msg');
+    if (msg) { msg.style.display=''; setTimeout(()=>msg.style.display='none',3000); }
     return;
   }
+  const d = DATA();
+  // Remove existing record for this day if overwriting
+  const existIdx = d.findIndex(r=>r.day===day);
+  if (existIdx >= 0) d.splice(existIdx, 1);
 
-  showToast(`⏳ กำลังบันทึก ${date} ไปยัง Google Sheets...`);
-  try {
-    const sheetRow = [
-      row.date, row.uf3_flow,
-      row.ro1_fcond, row.ro1_pcond, '', row.ro1_pflow, row.ro1_reject, row.ro1_arr1, row.ro1_arr2,
-      row.ro2_fcond, row.ro2_pcond, '', row.ro2_pflow, row.ro2_reject, row.ro2_arr1, row.ro2_arr2,
-      row.ro3_fcond, row.ro3_pcond, '', row.ro3_pflow, row.ro3_arr1, row.ro3_arr2, ''
-    ];
-    await fetch(APPS_SCRIPT_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'add', row: sheetRow })
-    });
-    showToast(`✅ บันทึก ${date} ลง Google Sheets สำเร็จ`);
-  } catch(e) {
-    showToast(`⚠️ บันทึกใน Dashboard แล้ว แต่ส่ง Sheets ไม่สำเร็จ`);
-  }
+  const note = document.getElementById('f-note').value.trim();
+  const rec = {
+    day,
+    uf1_fcond:g('f-uf1fc'), uf1_pcond:g('f-uf1pc'), uf1_flow:g('f-uf1fl'),
+    uf2_fcond:g('f-uf2fc'), uf2_pcond:g('f-uf2pc'), uf2_flow:g('f-uf2fl'),
+    uf3_fcond:g('f-uf3fc'), uf3_pcond:g('f-uf3pc'), uf3_flow:g('f-uf3fl'),
+    ro1_fcond:g('f-r1fc'), ro1_pcond:g('f-r1pc'), ro1_pflow:g('f-r1pf'), ro1_reject:g('f-r1rj'), ro1_arr1:g('f-r1a1'), ro1_arr2:g('f-r1a2'),
+    ro2_fcond:g('f-r2fc'), ro2_pcond:g('f-r2pc'), ro2_pflow:g('f-r2pf'), ro2_reject:g('f-r2rj'), ro2_arr1:g('f-r2a1'), ro2_arr2:g('f-r2a2'),
+    ro3_fcond:g('f-r3fc'), ro3_pcond:g('f-r3pc'), ro3_pflow:g('f-r3pf'), ro3_arr1:g('f-r3a1'), ro3_arr2:g('f-r3a2'),
+    uf3_pin:g('f-ufpin'), uf3_pout:g('f-ufpin')-2,
+    note: note || undefined,
+  };
+
+  // Insert sorted by day
+  d.push(rec);
+  d.sort((a,b)=>a.day-b.day);
+  selectedDay = d.findIndex(r=>r.day===day);
+  buildAll();
+  clearForm();
+  showToast(`✅ เพิ่มข้อมูล ${getDateStr(day)} สำเร็จ`);
 }
 
 function clearForm() {
-  ['f-date','f-uf3','f-r1fc','f-r1pc','f-r1pf','f-r1rj','f-r1a1','f-r1a2',
+  formSelectedDay = null;
+  const badge = document.getElementById('form-day-badge');
+  if (badge) badge.textContent = '—';
+  buildDayPicker();
+  ['f-note',
+   'f-uf1fc','f-uf1pc','f-uf1fl','f-uf2fc','f-uf2pc','f-uf2fl','f-uf3fc','f-uf3pc','f-uf3fl',
+   'f-r1fc','f-r1pc','f-r1pf','f-r1rj','f-r1a1','f-r1a2',
    'f-r2fc','f-r2pc','f-r2pf','f-r2rj','f-r2a1','f-r2a2',
    'f-r3fc','f-r3pc','f-r3pf','f-r3a1','f-r3a2','f-ufpin'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
+  ['sr-preview-uf1','sr-preview-uf2','sr-preview-uf3','sr-preview-ro1','sr-preview-ro2','sr-preview-ro3'].forEach(id=>{
+    const el=document.getElementById(id); if(el){el.textContent='—';el.style.color='#8e98a8';}
+  });
 }
 
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  DAILY VIEW
+// ══════════════════════════════════════════════════════
+function buildDayButtons() {
+  const d = DATA();
+  const wrap = document.getElementById('day-btns');
+  wrap.innerHTML = d.map((r,i)=>{
+    let cls = 'day-btn' + (r.membrane_change?' membrane-day':'') + (i===selectedDay?' active':'');
+    return `<button class="${cls}" onclick="selectDay(${i},this)">${getDateStr(r.day)}${r.membrane_change?' 🔧':''}</button>`;
+  }).join('');
+}
+
+function selectDay(i,btn) {
+  selectedDay = i;
+  document.querySelectorAll('.day-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDailyDetail(i);
+}
+
+function renderDailyDetail(i) {
+  const d = DATA();
+  if (!d.length) { document.getElementById('daily-content').innerHTML='<div class="no-data">ยังไม่มีข้อมูล</div>'; return; }
+  const r = d[i];
+  const prev = i>0?d[i-1]:null;
+  const s1=SR(r.ro1_fcond,r.ro1_pcond), s2=SR(r.ro2_fcond,r.ro2_pcond), s3=SR(r.ro3_fcond,r.ro3_pcond);
+  const uf1s=SR(r.uf1_fcond,r.uf1_pcond), uf2s=SR(r.uf2_fcond,r.uf2_pcond), uf3s=SR(r.uf3_fcond,r.uf3_pcond);
+
+  const metrics=[
+    // UF
+    {label:'UF#1 %Salt Reject',val:uf1s.toFixed(2),unit:'%',status:srStatus(uf1s),std:'STD ≥ 95%',color:uf1s>=95?'#06b6d4':uf1s>=90?'#f59e0b':'#f43f5e'},
+    {label:'UF#1 Prod Cond',val:fv(r.uf1_pcond).toFixed(1),unit:'μS/cm',status:condStatus(r.uf1_pcond),std:'STD < 85'},
+    {label:'UF#1 Flow',val:fv(r.uf1_flow).toFixed(1),unit:'m³/hr',status:r.uf1_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    {label:'UF#2 %Salt Reject',val:uf2s.toFixed(2),unit:'%',status:srStatus(uf2s),std:'STD ≥ 95%',color:uf2s>=95?'#f97316':uf2s>=90?'#f59e0b':'#f43f5e'},
+    {label:'UF#2 Prod Cond',val:fv(r.uf2_pcond).toFixed(1),unit:'μS/cm',status:condStatus(r.uf2_pcond),std:'STD < 85'},
+    {label:'UF#2 Flow',val:fv(r.uf2_flow).toFixed(1),unit:'m³/hr',status:r.uf2_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    {label:'UF#3 %Salt Reject',val:uf3s.toFixed(2),unit:'%',status:srStatus(uf3s),std:'STD ≥ 95%',color:uf3s>=95?'#f59e0b':uf3s>=90?'#f59e0b':'#f43f5e'},
+    {label:'UF#3 Prod Cond',val:fv(r.uf3_pcond).toFixed(1),unit:'μS/cm',status:condStatus(r.uf3_pcond),std:'STD < 85'},
+    {label:'UF#3 Flow',val:fv(r.uf3_flow).toFixed(1),unit:'m³/hr',status:r.uf3_flow<=70?'ok':'warn',std:'STD ≤ 70'},
+    // RO
+    {label:'RO#1 Salt Rejection',val:s1.toFixed(2),unit:'%',status:srStatus(s1),std:'STD ≥ 95%',color:s1>=95?'#10b981':s1>=90?'#f59e0b':'#f43f5e'},
+    {label:'RO#2 Salt Rejection',val:s2.toFixed(2),unit:'%',status:srStatus(s2),std:'STD ≥ 95%',color:s2>=95?'#10b981':s2>=90?'#f59e0b':'#f43f5e'},
+    {label:'RO#3 Salt Rejection',val:s3.toFixed(2),unit:'%',status:srStatus(s3),std:'STD ≥ 95%',color:s3>=95?'#10b981':s3>=90?'#f59e0b':'#f43f5e'},
+    {label:'RO#1 Prod Cond',val:fv(r.ro1_pcond).toFixed(1),unit:'μS/cm',status:condStatus(r.ro1_pcond),std:'STD < 85'},
+    {label:'RO#2 Prod Cond',val:fv(r.ro2_pcond).toFixed(1),unit:'μS/cm',status:condStatus(r.ro2_pcond),std:'STD < 85'},
+    {label:'RO#1 Prod Flow',val:fv(r.ro1_pflow).toFixed(1),unit:'m³/hr',status:(r.ro1_pflow>=35&&r.ro1_pflow<=40)?'ok':'warn',std:'STD 35–40'},
+    {label:'RO#2 Prod Flow',val:fv(r.ro2_pflow).toFixed(1),unit:'m³/hr',status:(r.ro2_pflow>=35&&r.ro2_pflow<=40)?'ok':'warn',std:'STD 35–40'},
+    {label:'RO#3 Prod Flow',val:fv(r.ro3_pflow).toFixed(1),unit:'m³/hr',std:'Target ≈ 50'},
+  ];
+
+  const trend = d.slice(0, i+1);
+  const tLabels = trend.map(x=>getDateStr(x.day));
+
+  const html = `
+    <div style="margin-bottom:12px;padding:10px 0;font-size:12px;color:var(--text-secondary)">
+      ข้อมูลวันที่ <strong style="color:var(--text-primary);font-size:15px">${getDateStr(r.day)}</strong>
+      ${r.note?`<span style="margin-left:10px;background:#fff7ed;color:#c2410c;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">${r.note}</span>`:''}
+    </div>
+    <div style="margin-bottom:10px;padding:8px 14px;background:#e0f7fa;border-radius:8px;font-size:11px;font-weight:700;color:#0891b2">🔵 UF — %Salt Rejection / Conductivity / Flow</div>
+    <div class="day-detail-grid">
+      ${metrics.map(m=>`
+        <div class="day-metric" style="border-left:3px solid ${m.color||'var(--border)'}">
+          <div class="dm-label">${m.label}</div>
+          <div class="dm-val" style="color:${m.color||'var(--text-primary)'}">${m.val}<span class="dm-unit"> ${m.unit}</span></div>
+          <div class="dm-std">${m.status?`<span class="sbadge ${m.status}"><span class="sdot"></span>${m.status==='ok'?'ปกติ':m.status==='warn'?'ระวัง':'เกิน STD'}</span>`:''} ${m.std||''}</div>
+        </div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="day-chart-card" style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px">
+        <div class="chart-title" style="margin-bottom:10px">%SR UF#1, 2, 3 — แนวโน้ม</div>
+        <div style="height:200px"><canvas id="day-uf-sr"></canvas></div>
+      </div>
+      <div class="day-chart-card" style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px">
+        <div class="chart-title" style="margin-bottom:10px">Flow UF#1, 2, 3 — แนวโน้ม</div>
+        <div style="height:200px"><canvas id="day-uf-flow"></canvas></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="day-chart-card" style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px">
+        <div class="chart-title" style="margin-bottom:10px">%Salt Rejection RO — แนวโน้ม</div>
+        <div style="height:200px"><canvas id="day-sr-chart"></canvas></div>
+      </div>
+      <div class="day-chart-card" style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:16px">
+        <div class="chart-title" style="margin-bottom:10px">Product Conductivity RO — แนวโน้ม</div>
+        <div style="height:200px"><canvas id="day-cond-chart"></canvas></div>
+      </div>
+    </div>`;
+
+  document.getElementById('daily-content').innerHTML = html;
+
+  const tOpts = (yLabel,yMin,yMax) => {
+    const yAxis = {grid:{color:'#f0f2f6'},title:{display:!!yLabel,text:yLabel,color:'#8e98a8',font:{size:10}}};
+    if (yMin!==null) yAxis.min=yMin;
+    if (yMax!==null) yAxis.max=yMax;
+    return {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top',labels:{boxWidth:9,padding:10,font:{size:10}}},tooltip:{backgroundColor:'#0f1923',padding:8,cornerRadius:8}},
+      scales:{x:{grid:{color:'#f0f2f6'},ticks:{maxRotation:45,font:{size:9}}},y:yAxis}
+    };
+  };
+
+  const tLine=(label,data,color)=>({label,data,borderColor:C[color].line,backgroundColor:C[color].fill,borderWidth:2,
+    pointBackgroundColor:C[color].line,pointRadius:trend.map((_,j)=>j===i?7:3),pointHoverRadius:7,tension:.35,fill:true});
+  const tStd=(label,val,color='rose')=>({label,data:Array(trend.length).fill(val),borderColor:C[color].line,borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false});
+
+  setTimeout(()=>{
+    new Chart(document.getElementById('day-uf-sr'),{type:'line',data:{labels:tLabels,datasets:[
+      tLine('UF#1',trend.map(x=>SR(x.uf1_fcond,x.uf1_pcond)),'cyan'),
+      tLine('UF#2',trend.map(x=>SR(x.uf2_fcond,x.uf2_pcond)),'orange'),
+      tLine('UF#3',trend.map(x=>SR(x.uf3_fcond,x.uf3_pcond)),'amber'),
+      tStd('STD 95%',95),
+    ]},options:tOpts('%SR',85,100)});
+
+    new Chart(document.getElementById('day-uf-flow'),{type:'line',data:{labels:tLabels,datasets:[
+      tLine('UF#1',trend.map(x=>x.uf1_flow),'cyan'),
+      tLine('UF#2',trend.map(x=>x.uf2_flow),'orange'),
+      tLine('UF#3',trend.map(x=>x.uf3_flow),'amber'),
+      tStd('STD 70',70,'rose'),
+    ]},options:tOpts('m³/hr',60,76)});
+
+    new Chart(document.getElementById('day-sr-chart'),{type:'line',data:{labels:tLabels,datasets:[
+      tLine('RO#1',trend.map(x=>SR(x.ro1_fcond,x.ro1_pcond)),'blue'),
+      tLine('RO#2',trend.map(x=>SR(x.ro2_fcond,x.ro2_pcond)),'teal'),
+      tLine('RO#3',trend.map(x=>SR(x.ro3_fcond,x.ro3_pcond)),'violet'),
+      tStd('STD 95%',95),
+    ]},options:tOpts('%SR',75,100)});
+
+    new Chart(document.getElementById('day-cond-chart'),{type:'line',data:{labels:tLabels,datasets:[
+      tLine('RO#1 Prod',trend.map(x=>x.ro1_pcond),'blue'),
+      tLine('RO#2 Prod',trend.map(x=>x.ro2_pcond),'teal'),
+      tLine('RO#3 Prod',trend.map(x=>x.ro3_pcond),'violet'),
+      tStd('STD 85',85,'rose'),
+    ]},options:tOpts('μS/cm',0,null)});
+  },50);
+}
+
+// ══════════════════════════════════════════════════════
+//  TAB + TOAST
+// ══════════════════════════════════════════════════════
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id==='daily') { buildDayButtons(); renderDailyDetail(selectedDay); }
+  if (id==='edit') { buildDayPicker(); }
+  setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize()),60);
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1291,68 +1305,14 @@ function showToast(msg) {
   setTimeout(()=>t.classList.remove('show'), 2800);
 }
 
-// ═══════════════════════════════════════════
-//  TAB SWITCH
-// ═══════════════════════════════════════════
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
-  if (id==='daily') {
-    buildDayButtons();
-    if (rangeMode === 'single') {
-      renderDailyDetail(selectedDay);
-    } else if (rangeStart !== null && rangeEnd !== null) {
-      renderRangeDetail(rangeStart, rangeEnd);
-    }
-  }
-  setTimeout(()=>Object.values(charts).forEach(c=>c&&c.resize()),60);
-}
-
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('lastUpdate').textContent = new Date().toLocaleString('th-TH',{timeStyle:'short',dateStyle:'short'});
-  Chart.register({
-    id:'annotationPlugin',
-    afterDraw(chart) {
-      const ann = chart.options.plugins?.annotation?.annotations;
-      if (!ann) return;
-      const {ctx, scales:{x,y}} = chart;
-      if (!x||!y) return;
-      Object.values(ann).forEach(a=>{
-        if (a.type!=='line') return;
-        const xPos = x.getPixelForValue(a.xMin);
-        ctx.save();
-        ctx.strokeStyle = a.borderColor||'orange';
-        ctx.lineWidth = a.borderWidth||2;
-        ctx.setLineDash(a.borderDash||[]);
-        ctx.beginPath();
-        ctx.moveTo(xPos, y.top);
-        ctx.lineTo(xPos, y.bottom);
-        ctx.stroke();
-        if (a.label?.display) {
-          ctx.setLineDash([]);
-          ctx.fillStyle = a.label.backgroundColor||'rgba(249,115,22,.12)';
-          ctx.font = `bold 10px 'Sarabun',sans-serif`;
-          const tw = ctx.measureText(a.label.content).width;
-          const px=6,py=3,bx=xPos+4,by=y.top+4;
-          ctx.beginPath();
-          ctx.roundRect(bx,by,tw+px*2,18,4);
-          ctx.fill();
-          ctx.fillStyle = a.label.color||'#c2410c';
-          ctx.fillText(a.label.content, bx+px, by+13);
-        }
-        ctx.restore();
-      });
-    }
-  });
+  initYearSelect();
+  document.getElementById('sel-month').value = curMonth;
   buildAll();
-  renderDailyDetail(selectedDay);
-  // โหลดข้อมูลล่าสุดจาก Google Sheets
-  if (typeof loadFromSheets === 'function') loadFromSheets();
 });
 </script>
 </body>

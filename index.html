@@ -140,6 +140,8 @@ td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)
   </div>
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
     <span style="font-size:11px;color:var(--text-muted);font-family:'IBM Plex Mono',monospace" id="lastUpdate"></span>
+    <span id="sync-status" style="font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--blue)"></span>
+    <button onclick="refreshData()" style="padding:4px 12px;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:'Sarabun',sans-serif;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-secondary)" title="โหลดข้อมูลใหม่จาก Google Sheets">🔄 รีเฟรช</button>
   </div>
 </header>
 
@@ -546,7 +548,8 @@ td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)
               <div class="form-group"><label class="form-label" style="color:#1d4ed8">Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r1pf" step="0.1" placeholder="38.0" style="border-color:#93c5fd"></div>
               <div class="form-group"><label class="form-label" style="color:#1d4ed8">Reject Flow (m³/hr)</label><input class="form-input" type="number" id="f-r1rj" step="0.1" placeholder="13.0" style="border-color:#93c5fd"></div>
               <div class="form-group"><label class="form-label" style="color:#1d4ed8">Array1 In (psi)</label><input class="form-input" type="number" id="f-r1a1" placeholder="150" style="border-color:#93c5fd"></div>
-              <div style="background:#fff;border-radius:8px;padding:7px 8px;text-align:center;border:1px solid #bfdbfe">
+              <div class="form-group"><label class="form-label" style="color:#1d4ed8">Array2 In (psi)</label><input class="form-input" type="number" id="f-r1a2" placeholder="130" style="border-color:#93c5fd"></div>
+              <div style="background:#fff;border-radius:8px;padding:7px 8px;text-align:center;border:1px solid #bfdbfe;grid-column:span 2">
                 <div style="font-size:9px;color:var(--blue);font-weight:700;text-transform:uppercase">%Salt Reject</div>
                 <div id="sr-preview-ro1" style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
               </div>
@@ -562,7 +565,8 @@ td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)
               <div class="form-group"><label class="form-label" style="color:#0f766e">Prod Flow (m³/hr)</label><input class="form-input" type="number" id="f-r2pf" step="0.1" placeholder="38.0" style="border-color:#5eead4"></div>
               <div class="form-group"><label class="form-label" style="color:#0f766e">Reject Flow (m³/hr)</label><input class="form-input" type="number" id="f-r2rj" step="0.1" placeholder="13.0" style="border-color:#5eead4"></div>
               <div class="form-group"><label class="form-label" style="color:#0f766e">Array1 In (psi)</label><input class="form-input" type="number" id="f-r2a1" placeholder="150" style="border-color:#5eead4"></div>
-              <div style="background:#fff;border-radius:8px;padding:7px 8px;text-align:center;border:1px solid #99f6e4">
+              <div class="form-group"><label class="form-label" style="color:#0f766e">Array2 In (psi)</label><input class="form-input" type="number" id="f-r2a2" placeholder="130" style="border-color:#5eead4"></div>
+              <div style="background:#fff;border-radius:8px;padding:7px 8px;text-align:center;border:1px solid #99f6e4;grid-column:span 2">
                 <div style="font-size:9px;color:var(--teal);font-weight:700;text-transform:uppercase">%Salt Reject</div>
                 <div id="sr-preview-ro2" style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#8e98a8;margin-top:2px">—</div>
               </div>
@@ -586,14 +590,16 @@ td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)
       </div>
 
       <!-- Action buttons -->
-      <div style="display:flex;gap:10px;align-items:center;padding:16px 0 4px;border-top:1px solid var(--border-light)">
-        <button onclick="addRecord()" style="padding:12px 30px;background:linear-gradient(135deg,var(--blue),#0ea5e9);color:#fff;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(26,110,245,.35);transition:opacity .15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
-          ➕ บันทึกข้อมูล
-        </button>
-        <button onclick="clearForm()" style="padding:12px 20px;background:#fff;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:10px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer">
-          🗑 ล้างฟอร์ม
-        </button>
-        <div id="form-validation-msg" style="font-size:12px;color:var(--rose);font-weight:600;display:none">⚠️ กรุณาเลือกวันที่ก่อน</div>
+      <div style="padding:16px 0 4px;border-top:1px solid var(--border-light)">
+        <div id="form-validation-msg" style="font-size:13px;color:var(--rose);font-weight:600;display:none;margin-bottom:10px;background:#fff1f2;border:1.5px solid #fecdd3;border-radius:8px;padding:10px 14px">⚠️ กรุณาเลือกวันที่ (ปฏิทินด้านบน) ก่อนกดบันทึก</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="save-btn" onclick="addRecord()" style="padding:14px 36px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,.4);transition:opacity .15s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+            💾 บันทึกข้อมูล
+          </button>
+          <button onclick="clearForm()" style="padding:14px 20px;background:#fff;color:var(--text-secondary);border:1.5px solid var(--border);border-radius:10px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer">
+            🗑 ล้างฟอร์ม
+          </button>
+        </div>
       </div>
 
     </div>
@@ -607,14 +613,15 @@ td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)
     </div>
     <div class="tscroll"><table>
       <thead><tr>
-        <th>วันที่</th>
+        <th style="position:sticky;left:0;z-index:10;background:var(--bg);min-width:80px">จัดการ</th>
+        <th style="position:sticky;left:80px;z-index:10;background:var(--bg);min-width:90px">วันที่</th>
         <th>UF1 FeedC</th><th>UF1 ProdC</th><th>UF1 Flow</th>
         <th>UF2 FeedC</th><th>UF2 ProdC</th><th>UF2 Flow</th>
         <th>UF3 FeedC</th><th>UF3 ProdC</th><th>UF3 Flow</th>
         <th>R1 FeedC</th><th>R1 ProdC</th><th>R1 PFlow</th>
         <th>R2 FeedC</th><th>R2 ProdC</th><th>R2 PFlow</th>
         <th>R3 FeedC</th><th>R3 ProdC</th><th>R3 PFlow</th>
-        <th>หมายเหตุ</th><th></th>
+        <th>หมายเหตุ</th>
       </tr></thead>
       <tbody id="edit-tbody"></tbody>
     </table></div>
@@ -625,6 +632,102 @@ td input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,110,245,.1)
 <div class="success-toast" id="toast"></div>
 
 <script>
+// ══════════════════════════════════════════════════════
+//  GOOGLE SHEETS CONFIG
+//  ใส่ URL ของ Web App ที่ได้จาก Google Apps Script Deploy
+// ══════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxo07uEBHVuN7Uy7JLqb4Uq-uN70ABILev67kjf0E22_Mr7OW-HMKz7OjcFdDJd4Rsx/exec';
+
+// ── Sync Status UI ──
+function setSyncStatus(msg, type='info') {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const colors = { info:'#1a6ef5', ok:'#10b981', error:'#f43f5e', loading:'#f59e0b' };
+  el.textContent = msg;
+  el.style.color = colors[type] || '#1a6ef5';
+}
+
+// ── โหลดข้อมูลจาก Google Sheets ──
+async function loadFromSheets(year, month) {
+  if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return false;
+  try {
+    setSyncStatus('⏳ กำลังโหลดข้อมูล...', 'loading');
+    const url = `${SCRIPT_URL}?action=load&year=${year}&month=${month}`;
+    const res  = await fetch(url);
+    const json = await res.json();
+    if (json.status !== 'ok') throw new Error(json.message);
+
+    // แปลงข้อมูลจาก Sheets กลับเป็น ALL_DATA format
+    if (!ALL_DATA[year]) ALL_DATA[year] = {};
+    ALL_DATA[year][month] = json.data.map(row => {
+      const r = {};
+      Object.keys(row).forEach(k => {
+        const v = row[k];
+        r[k] = (v === '' || v === null) ? undefined : (isNaN(v) ? v : Number(v));
+      });
+      r.membrane_change = r.membrane_change === true || r.membrane_change === 'TRUE';
+      return r;
+    });
+    setSyncStatus(`✅ โหลดข้อมูล ${json.data.length} รายการ`, 'ok');
+    return true;
+  } catch(e) {
+    setSyncStatus('⚠️ โหลดข้อมูลไม่ได้: ' + e.message, 'error');
+    return false;
+  }
+}
+
+// ── บันทึก 1 record ไปยัง Google Sheets ──
+async function saveToSheets(record) {
+  if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  try {
+    setSyncStatus('⏳ กำลังบันทึก...', 'loading');
+    const payload = { action:'save', record: {...record, year:curYear, month:curMonth} };
+    const res = await fetch(SCRIPT_URL, {
+      method:'POST',
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if (json.status !== 'ok') throw new Error(json.message);
+    setSyncStatus('✅ บันทึกลง Google Sheets แล้ว', 'ok');
+  } catch(e) {
+    setSyncStatus('❌ บันทึกไม่สำเร็จ: ' + e.message, 'error');
+  }
+}
+
+// ── ลบ record จาก Google Sheets ──
+async function deleteFromSheets(year, month, day) {
+  if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+  try {
+    const payload = { action:'delete', year, month, day };
+    await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+  } catch(e) { console.error('delete error:', e); }
+}
+
+// ── localStorage backup (ใช้เมื่อยังไม่ได้ตั้ง Google Sheets) ──
+const LS_KEY = 'wtp_alldata_haadthip';
+
+function saveToLocal() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(ALL_DATA)); } catch(e) {}
+}
+
+function loadFromLocal() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Merge: local data เข้ากับ ALL_DATA เดิม (ถ้ามี key ใหม่เพิ่ม)
+      Object.keys(parsed).forEach(y => {
+        if (!ALL_DATA[y]) ALL_DATA[y] = {};
+        Object.keys(parsed[y]).forEach(m => {
+          if (!ALL_DATA[y][m] || ALL_DATA[y][m].length === 0) {
+            ALL_DATA[y][m] = parsed[y][m];
+          }
+        });
+      });
+    }
+  } catch(e) {}
+}
+
 // ══════════════════════════════════════════════════════
 //  DATA STRUCTURE
 //  ALL_DATA[year][month] = [ ...records ]
@@ -696,10 +799,11 @@ function initYearSelect() {
   sel.innerHTML = getAvailableYears().map(y=>`<option value="${y}" ${y===curYear?'selected':''}>${y}</option>`).join('');
 }
 
-function onPeriodChange() {
+async function onPeriodChange() {
   curYear = parseInt(document.getElementById('sel-year').value);
   curMonth = parseInt(document.getElementById('sel-month').value);
   selectedDay = 0;
+  const loaded = await loadFromSheets(curYear, curMonth);
   buildAll();
 }
 
@@ -1018,9 +1122,15 @@ function pickerSelectDay(day) {
   const taken = d.find(r=>r.day===day);
   if (taken && !confirm(`วันที่ ${day} มีข้อมูลอยู่แล้ว ต้องการเขียนทับหรือไม่?`)) return;
   formSelectedDay = day;
-  // Update badge
   const badge = document.getElementById('form-day-badge');
   if (badge) badge.textContent = String(day).padStart(2,'0');
+  // ไฮไลต์ปุ่มบันทึกให้รู้ว่าเลือกวันแล้ว
+  const btn = document.getElementById('save-btn');
+  if (btn) {
+    btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+    btn.style.boxShadow = '0 4px 20px rgba(16,185,129,.6)';
+    btn.textContent = `💾 บันทึกวันที่ ${day}`;
+  }
   buildDayPicker();
 }
 
@@ -1054,13 +1164,13 @@ function buildEditTable() {
   document.getElementById('edit-tbody').innerHTML = d.map((r,i)=>{
     const mc = r.membrane_change?' style="background:#fff7ed"':'';
     return `<tr id="erow-${i}"${mc}>
-      <td class="datecol">${getDateStr(r.day)}${r.membrane_change?' 🔧':''}</td>
-      ${editFields.map(([id,key])=>`<td id="ev-${id}-${i}">${fv(r[key]).toFixed(1)}</td>`).join('')}
-      <td style="font-size:11px;color:var(--text-muted);max-width:120px;overflow:hidden">${r.note||''}</td>
-      <td style="display:flex;gap:4px;padding:6px">
+      <td style="position:sticky;left:0;z-index:5;background:${r.membrane_change?'#fff7ed':'#fff'};display:flex;gap:4px;padding:6px;border-bottom:1px solid var(--border-light)">
         <button class="ebtn" onclick="startEdit(${i})">✏️</button>
         <button class="dbtn" onclick="deleteRecord(${i})">🗑</button>
       </td>
+      <td class="datecol" style="position:sticky;left:80px;z-index:5;background:${r.membrane_change?'#fff7ed':'#fff'}">${getDateStr(r.day)}${r.membrane_change?' 🔧':''}</td>
+      ${editFields.map(([id,key])=>`<td id="ev-${id}-${i}">${fv(r[key]).toFixed(1)}</td>`).join('')}
+      <td style="font-size:11px;color:var(--text-muted);max-width:120px;overflow:hidden">${r.note||''}</td>
     </tr>`;
   }).join('');
 }
@@ -1071,8 +1181,8 @@ function startEdit(i) {
     const el = document.getElementById(`ev-${id}-${i}`);
     if(el) el.outerHTML = `<input type="number" id="ev-${id}-${i}" value="${fv(d[i][key]).toFixed(1)}" step="0.1" style="width:64px;border:1.5px solid var(--border);border-radius:4px;padding:2px 4px;font-size:11px">`;
   });
-  const td = document.querySelector(`#erow-${i} td:last-child`);
-  td.innerHTML = `<button class="sbtn" onclick="saveEdit(${i})">💾</button>`;
+  const stickyTd = document.querySelector(`#erow-${i} td:first-child`);
+  if (stickyTd) stickyTd.innerHTML = `<button class="sbtn" onclick="saveEdit(${i})">💾 บันทึก</button>`;
 }
 
 function saveEdit(i) {
@@ -1081,24 +1191,29 @@ function saveEdit(i) {
     const el = document.getElementById(`ev-${id}-${i}`);
     if (el) d[i][key] = parseFloat(el.value)||0;
   });
+  saveToLocal();
   buildAll();
   showToast('✅ บันทึกข้อมูลสำเร็จ');
+  saveToSheets(d[i]);
 }
 
 function deleteRecord(i) {
   const d = DATA();
   if (!confirm(`ลบข้อมูลวันที่ ${getDateStr(d[i].day)} ใช่หรือไม่?`)) return;
+  const day = d[i].day;
   d.splice(i,1);
   selectedDay = Math.max(0, Math.min(selectedDay, d.length-1));
+  saveToLocal();
   buildAll();
   showToast('🗑 ลบข้อมูลแล้ว');
+  deleteFromSheets(curYear, curMonth, day);
 }
 
 // ══════════════════════════════════════════════════════
 //  ADD RECORD
 // ══════════════════════════════════════════════════════
 function addRecord() {
-  const g = id => parseFloat(document.getElementById(id).value) || 0;
+  const g = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
   const day = formSelectedDay;
   if (!day) {
     const msg = document.getElementById('form-validation-msg');
@@ -1127,9 +1242,11 @@ function addRecord() {
   d.push(rec);
   d.sort((a,b)=>a.day-b.day);
   selectedDay = d.findIndex(r=>r.day===day);
+  saveToLocal();
   buildAll();
   clearForm();
-  showToast(`✅ เพิ่มข้อมูล ${getDateStr(day)} สำเร็จ`);
+  showToast(`✅ บันทึกข้อมูลวันที่ ${getDateStr(day)} สำเร็จ`);
+  saveToSheets({...rec, year:curYear, month:curMonth});
 }
 
 function clearForm() {
@@ -1288,6 +1405,12 @@ function renderDailyDetail(i) {
 // ══════════════════════════════════════════════════════
 //  TAB + TOAST
 // ══════════════════════════════════════════════════════
+async function refreshData() {
+  const loaded = await loadFromSheets(curYear, curMonth);
+  buildAll();
+  if (loaded) showToast('🔄 โหลดข้อมูลล่าสุดจาก Google Sheets แล้ว');
+}
+
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -1308,10 +1431,12 @@ function showToast(msg) {
 // ══════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
   document.getElementById('lastUpdate').textContent = new Date().toLocaleString('th-TH',{timeStyle:'short',dateStyle:'short'});
+  loadFromLocal();
   initYearSelect();
   document.getElementById('sel-month').value = curMonth;
+  const loaded = await loadFromSheets(curYear, curMonth);
   buildAll();
 });
 </script>
